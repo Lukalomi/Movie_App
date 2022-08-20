@@ -44,5 +44,17 @@
         app:layout_constraintStart_toEndOf="@+id/tvAppName"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvHomeRecycler"
+        android:layout_marginTop="20dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_action"
+        tools:listitem="@layout/single_movie_item"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
