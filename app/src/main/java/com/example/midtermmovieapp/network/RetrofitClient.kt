@@ -18,6 +18,6 @@ object RetrofitClient {
 
 
 interface FetchedMovies {
-    @GET("movie/550?api_key=7ed909b5505ef24375a120e6e2c06512")
+    @GET("movie/popular?api_key=7ed909b5505ef24375a120e6e2c06512")
     suspend fun getMovies(): Response<HomeModel>
 }

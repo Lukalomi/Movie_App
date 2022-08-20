@@ -11,14 +11,15 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
-    private val _contentState = MutableStateFlow<List<HomeModel?>>(emptyList())
-    var contentState:StateFlow<List<HomeModel?>> = _contentState
+    private val _contentState = MutableStateFlow<List<HomeModel.Result>>(emptyList())
+    var contentState:StateFlow<List<HomeModel.Result>> = _contentState
 
     fun getMovieContent() {
         viewModelScope.launch {
             val response = RetrofitClient.FetchedMovies().getMovies()
             if(response.isSuccessful) {
-                _contentState.value = listOf(response.body())
+                _contentState.value = response.body()?.results ?: emptyList()
+                Log.d("serverresponse",response.body().toString())
             }
             else {
                 Log.d("fetchedError",response.errorBody().toString())
