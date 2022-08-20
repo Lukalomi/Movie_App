@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="15dp"
-    app:cardCornerRadius="30dp"
-    android:layout_marginBottom="5dp"
     android:layout_marginStart="5dp"
+    android:layout_marginTop="15dp"
     android:layout_marginEnd="5dp"
+    android:layout_marginBottom="5dp"
+    app:cardCornerRadius="30dp"
     app:cardElevation="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,6 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
+            android:foreground="?android:attr/selectableItemBackground"
             android:src="@drawable/ic_fav_logo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -40,23 +42,46 @@
             android:id="@+id/tvMovieName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="45dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="35dp"
+            android:gravity="center"
             android:text="Movie Name"
+            android:textColor="@color/black"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/tvMovieRating"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ibMovieImage" />
 
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRatingIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="20dp"
+            android:text="Movie Rating : "
+            android:textColor="#323131"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvMovieName" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvMovieRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Movie Rating"
+            android:layout_marginStart="0dp"
             android:layout_marginBottom="20dp"
+            android:text="Movie Rating"
+            android:textColor="#804747"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/tvRatingIndicator" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
