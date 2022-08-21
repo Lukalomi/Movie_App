@@ -34,6 +34,11 @@ class HomeFragment : Fragment() {
 
         viewModel.getMovieContent()
 
+
+        binding!!.appCompatImageButton.setOnClickListener{
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.contentState.collect {
