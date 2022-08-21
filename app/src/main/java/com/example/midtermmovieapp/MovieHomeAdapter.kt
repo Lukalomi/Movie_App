@@ -1,5 +1,6 @@
 package com.example.midtermmovieapp
 
+import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,7 +12,8 @@ import com.example.midtermmovieapp.databinding.SingleMovieItemBinding
 
 class MovieHomeAdapter(
     var items: List<HomeModel.Result>,
-    private val context: Context
+    private val context: Context,
+    var onClickListener: ((HomeModel.Result) -> Unit)? = null
 ) : RecyclerView.Adapter<MovieHomeAdapter.ItemViewHolder>() {
 
 
@@ -33,9 +35,15 @@ class MovieHomeAdapter(
         Glide.with(context).load("https://image.tmdb.org/t/p/w500"+items[position].posterPath).error(R.drawable.ic_launcher_background)
             .into(holder.binding.ibMovieImage)
 
+        holder.binding.ibMovieImage.setOnClickListener{
+            onClickListener?.invoke(items[position])
+        }
+
+
     }
 
     override fun getItemCount() = items.size
+
 
 
 }
