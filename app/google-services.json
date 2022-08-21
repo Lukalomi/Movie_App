@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "275945677647",
+    "project_id": "com.example.midtermmovieapp",
+    "storage_bucket": "movieappmidterm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275945677647:android:b64332c5979455c433db3a",
+        "android_client_info": {
+          "package_name": "com.example.midtermmovieapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "275945677647-qrp5fttg837g2mdcct5hbq326qsqu394.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtSpvAkl_KCyeutjdbo3Pchmzoo5Whj5I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "275945677647-qrp5fttg837g2mdcct5hbq326qsqu394.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
