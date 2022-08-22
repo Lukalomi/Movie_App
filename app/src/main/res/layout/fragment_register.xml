@@ -111,6 +111,7 @@
         app:layout_constraintTop_toBottomOf="@+id/etPassLayout"
         app:layout_constraintVertical_bias="0.214" />
 
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
@@ -130,6 +131,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPassLayout"
         app:layout_constraintVertical_bias="0.682" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

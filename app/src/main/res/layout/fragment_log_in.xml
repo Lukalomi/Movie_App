@@ -96,9 +96,7 @@
             android:inputType="textPassword"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etUsername"
-
-            />
+            app:layout_constraintTop_toBottomOf="@+id/etUsername" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <ProgressBar
@@ -107,6 +105,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="9dp"
         android:layout_marginBottom="12dp"
+
         app:layout_constraintBottom_toTopOf="@+id/btnLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -121,6 +120,7 @@
         android:layout_marginEnd="40dp"
         android:background="@drawable/roundedbtn_light"
         android:text="@string/login"
+
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="16sp"

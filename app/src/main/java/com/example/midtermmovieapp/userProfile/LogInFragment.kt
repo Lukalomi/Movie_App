@@ -34,15 +34,11 @@ class LogInFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
 
         binding!!.btnLogin.setOnClickListener {
-            registerUser()
+            logInUser()
         }
     }
 
-
-
-
-    private fun registerUser() {
-        checkFields()
+    private fun logInUser() {
         if (binding!!.etEmail.text.toString().isNotEmpty() && binding!!.etPass.text.toString()
                 .isNotEmpty()
         ) {
@@ -74,6 +70,7 @@ class LogInFragment : Fragment() {
             }
         }
     }
+
 
     private fun checkFields() {
         if (binding!!.etEmail.text.toString().isEmpty() && binding!!.etPass.text.toString()
