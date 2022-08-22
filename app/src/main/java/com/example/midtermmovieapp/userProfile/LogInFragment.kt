@@ -21,7 +21,6 @@ class LogInFragment : Fragment() {
     private var binding: FragmentLogInBinding? = null
     lateinit var auth: FirebaseAuth
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,6 +32,7 @@ class LogInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
+
         binding!!.btnLogin.setOnClickListener {
             logInUser()
         }
@@ -71,14 +71,29 @@ class LogInFragment : Fragment() {
         }
     }
 
+
+    private fun checkFields() {
+        if (binding!!.etEmail.text.toString().isEmpty() && binding!!.etPass.text.toString()
+                .isEmpty())
+        {
+            Toast.makeText(requireContext(), "Please Fill Out Every Field", Toast.LENGTH_SHORT).show()
+
+        }
+    }
+
     private fun checkLoggedInstance() {
         if (auth.currentUser == null) {
-            Toast.makeText(requireContext(), "you Haven't Registered", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "you Haven't Registered", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(requireContext(), "you are Logged In", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "you are Logged In", Toast.LENGTH_SHORT).show()
             findNavController().navigate(LogInFragmentDirections.actionLogInFragmentToHomeFragment())
         }
     }
 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
 
 }

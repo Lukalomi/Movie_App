@@ -25,6 +25,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_ellipse2" />
+
     <TextView
         android:id="@+id/tvRegister"
         android:layout_width="wrap_content"
@@ -55,12 +56,12 @@
         android:layout_height="50dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="46dp"
-        android:inputType="textEmailAddress"
         android:layout_marginEnd="40dp"
         android:background="@drawable/roundedbtn_light"
         android:drawableStart="@drawable/ic_baseline_email_24"
         android:drawablePadding="30dp"
         android:hint="@string/email"
+        android:inputType="textEmailAddress"
         android:paddingStart="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -100,23 +101,23 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <ProgressBar
-        android:id="@+id/pbRegister"
+        android:id="@+id/pgRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/btnRegister"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPassLayout"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.214" />
+
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="42dp"
         android:layout_marginEnd="40dp"
         android:layout_marginBottom="60dp"
         android:background="@drawable/roundedbtn_light"
@@ -129,7 +130,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPassLayout"
-        app:layout_constraintVertical_bias="0.655" />
+        app:layout_constraintVertical_bias="0.682" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
