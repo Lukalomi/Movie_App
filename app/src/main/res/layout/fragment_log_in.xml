@@ -51,7 +51,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvLogin" />
 
     <EditText
-        android:id="@+id/etUsername"
+        android:id="@+id/etEmail"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="24dp"
@@ -61,7 +61,7 @@
         android:layout_marginEnd="40dp"
         android:background="@drawable/roundedbtn_light"
         android:drawableStart="@drawable/ic_baseline_person_24"
-        android:hint="@string/username"
+        android:hint="@string/email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -71,22 +71,21 @@
         android:id="@+id/etPassLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:passwordToggleEnabled="true"
-        android:hint="@string/password"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:startIconDrawable="@drawable/ic_baseline_lock_24"
-        android:textColorHint="#777373"
-        app:layout_constraintTop_toBottomOf="@+id/etUsername"
         android:layout_marginStart="40dp"
         android:layout_marginTop="31dp"
         android:layout_marginEnd="40dp"
+        android:hint="@string/password"
+        android:textColorHint="#777373"
         app:boxStrokeWidth="0dp"
         app:boxStrokeWidthFocused="0dp"
-        app:startIconTint="#700BEF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etEmail"
         app:passwordToggleDrawable="@drawable/ic_baseline_remove_red_eye_24"
+        app:passwordToggleEnabled="true"
         app:passwordToggleTint="#700BEF"
-        >
+        app:startIconDrawable="@drawable/ic_baseline_lock_24"
+        app:startIconTint="#700BEF">
 
         <EditText
             android:id="@+id/etPass"
@@ -102,21 +101,31 @@
             />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <ProgressBar
+        android:id="@+id/pgLogIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etPassLayout" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginStart="40dp"
-        android:textSize="16sp"
-        android:textColor="#FFFFFF"
-        android:textAllCaps="false"
-        android:layout_marginEnd="40dp"
-        android:layout_marginTop="0dp"
         android:layout_marginBottom="60dp"
-        android:text="@string/login"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
         android:background="@drawable/roundedbtn_light"
+        android:text="@string/login"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPassLayout"
-        />
+        tools:layout_editor_absoluteX="40dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

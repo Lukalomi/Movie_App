@@ -24,7 +24,6 @@ class RegisterFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        auth = FirebaseAuth.getInstance()
 
     }
 
@@ -38,6 +37,7 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        auth = FirebaseAuth.getInstance()
         binding!!.btnRegister.setOnClickListener {
             registerUser()
 
@@ -46,6 +46,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun registerUser() {
+        checkFields()
         if (binding!!.etEmail.text.toString().isNotEmpty() && binding!!.etPass.text.toString()
                 .isNotEmpty()
         ) {
@@ -77,12 +78,20 @@ class RegisterFragment : Fragment() {
             }
         }
     }
+    private fun checkFields() {
+        if (binding!!.etEmail.text.toString().isEmpty() && binding!!.etPass.text.toString()
+                .isEmpty())
+        {
+            Toast.makeText(requireContext(), "Please Fill Out Every Field", Toast.LENGTH_SHORT).show()
+
+        }
+    }
 
     private fun checkLoggedInstance() {
         if (auth.currentUser == null) {
-            Toast.makeText(requireContext(), "you Haven't Registered", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "you Haven't Registered", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(requireContext(), "you are Registered", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "you are Registered", Toast.LENGTH_SHORT).show()
             findNavController().navigate(RegisterFragmentDirections.actionRegisterFragmentToLogInFragment())
         }
     }
