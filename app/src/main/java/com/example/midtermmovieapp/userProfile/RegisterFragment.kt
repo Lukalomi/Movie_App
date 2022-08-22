@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.midtermmovieapp.databinding.FragmentRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -51,9 +52,10 @@ class RegisterFragment : Fragment() {
                 .isNotEmpty()
         ) {
 
-            CoroutineScope(Dispatchers.IO).launch {
+            viewLifecycleOwner.lifecycleScope.launch {
 
                 try {
+                    binding!!.pgRegister.visibility = View.VISIBLE
                     auth.createUserWithEmailAndPassword(
                         binding!!.etEmail.text.toString(),
                         binding!!.etPass.text.toString()
@@ -61,6 +63,7 @@ class RegisterFragment : Fragment() {
 
                         if(it.isSuccessful) {
                             checkLoggedInstance()
+                            binding!!.pgRegister.visibility = View.GONE
                         }
                         else {
                             Toast.makeText(requireContext(),it.exception.toString(),Toast.LENGTH_LONG).show()

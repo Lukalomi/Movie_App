@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class DialogFragment : Fragment() {
     private var binding: FragmentDialogBinding? = null
-    private val viewModel: HomeViewModel by activityViewModels()
+    private val viewModel: DialogViewModel by viewModels()
 
 
     override fun onCreateView(
@@ -35,26 +36,26 @@ class DialogFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getMovieContent()
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                viewModel.contentState.collect {
-                    val listSize = it.size
-                    var i = 0
-                    while (i < listSize) {
-                        binding!!.tvDialogMovieName.text = it[i].title
-                        binding!!.tvDialogMovieDesc.text = it[i].overview
-                        Glide.with(requireContext())
-                            .load("https://image.tmdb.org/t/p/w500" + it[i].posterPath)
-                            .error(R.drawable.ic_launcher_background)
-                            .into(binding!!.ivDialogMovie)
-                        i++
-                    }
-                }
-
-            }
-        }
+//        viewModel.getMovieContent()
+//
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+//                viewModel.contentState.collect {
+//                    val listSize = it.data.size
+//                    var i = 0
+//                    while (i < listSize) {
+//                        binding!!.tvDialogMovieName.text = it[i].title
+//                        binding!!.tvDialogMovieDesc.text = it[i].overview
+//                        Glide.with(requireContext())
+//                            .load("https://image.tmdb.org/t/p/w500" + it[i].posterPath)
+//                            .error(R.drawable.ic_launcher_background)
+//                            .into(binding!!.ivDialogMovie)
+//                        i++
+//                    }
+//                }
+//
+//            }
+//        }
 
 
     }

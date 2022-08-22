@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.midtermmovieapp.R
 import com.example.midtermmovieapp.databinding.FragmentLogInBinding
@@ -43,9 +44,11 @@ class LogInFragment : Fragment() {
                 .isNotEmpty()
         ) {
 
-            CoroutineScope(Dispatchers.IO).launch {
+            viewLifecycleOwner.lifecycleScope.launch {
 
                 try {
+                    binding!!.pgLogIn.visibility = View.VISIBLE
+
                     auth.signInWithEmailAndPassword(
                         binding!!.etEmail.text.toString(),
                         binding!!.etPass.text.toString()
@@ -53,6 +56,8 @@ class LogInFragment : Fragment() {
 
                         if(it.isSuccessful) {
                             checkLoggedInstance()
+                            binding!!.pgLogIn.visibility = View.INVISIBLE
+
                         }
                         else {
                             Toast.makeText(requireContext(),it.exception.toString(), Toast.LENGTH_LONG).show()
