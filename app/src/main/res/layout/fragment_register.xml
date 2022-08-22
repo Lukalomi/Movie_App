@@ -71,11 +71,11 @@
         android:id="@+id/etPassLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="40dp"
+        android:layout_marginEnd="40dp"
         android:textColorHint="#777373"
         app:boxStrokeWidth="0dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
         app:boxStrokeWidthFocused="0dp"
 
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,6 +99,18 @@
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <ProgressBar
+        android:id="@+id/pbRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnRegister"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etPassLayout"
+        app:layout_constraintVertical_bias="1.0" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
@@ -117,7 +129,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPassLayout"
-        app:layout_constraintVertical_bias="0.344" />
+        app:layout_constraintVertical_bias="0.655" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
