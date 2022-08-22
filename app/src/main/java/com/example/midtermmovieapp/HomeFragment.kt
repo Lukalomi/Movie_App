@@ -5,7 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -18,7 +21,7 @@ class HomeFragment : Fragment() {
 
     private var binding: FragmentHomeBinding? = null
     private lateinit var adapter: MovieHomeAdapter
-    private val viewModel: HomeViewModel by activityViewModels()
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,23 +38,39 @@ class HomeFragment : Fragment() {
         viewModel.getMovieContent()
 
 
-        binding!!.appCompatImageButton.setOnClickListener{
+        binding!!.appCompatImageButton.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.contentState.collect {
-                    adapter = MovieHomeAdapter(it, requireContext())
-                    binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
-                    binding!!.rvHomeRecycler.adapter = adapter
-                    adapter.onClickListener = {
-                        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToDialogFragment())
+                    when (it) {
+                        is Resource.Success -> {
+                            adapter = MovieHomeAdapter(it, requireContext())
+                            binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
+                            binding!!.rvHomeRecycler.adapter = adapter
+                            adapter.onClickListener = {
+                                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToDialogFragment())
+
+                            }
+                        }
+                        is Resource.Error -> {
+                            Toast.makeText(requireContext(), it.errorMsg, Toast.LENGTH_SHORT).show()
+
+                        }
+                        is Resource.Loader -> {
+                            if(it.isLoading != binding!!.pbHome.isVisible) {
+                                binding!!.pbHome.visibility = View.GONE
+                                binding!!.tvHomeLoader.visibility = View.GONE
+
+                            }
+                        }
                     }
+
                 }
             }
         }
-
     }
 
 

@@ -105,7 +105,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="9dp"
         android:layout_marginBottom="12dp"
-
+        android:indeterminate="true"
+        android:indeterminateTintMode="src_atop"
+        android:indeterminateTint="#E0B0FA"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/btnLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
