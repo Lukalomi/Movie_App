@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.navArgs
 
 import com.bumptech.glide.Glide
 import com.example.midtermmovieapp.*
@@ -21,8 +22,7 @@ import kotlinx.coroutines.launch
 
 class DialogFragment : Fragment() {
     private var binding: FragmentDialogBinding? = null
-    private val viewModel: DialogViewModel by viewModels()
-
+    private val args: DialogFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,26 +36,12 @@ class DialogFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        viewModel.getMovieContent()
-//
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-//                viewModel.contentState.collect {
-//                    val listSize = it.data.size
-//                    var i = 0
-//                    while (i < listSize) {
-//                        binding!!.tvDialogMovieName.text = it[i].title
-//                        binding!!.tvDialogMovieDesc.text = it[i].overview
-//                        Glide.with(requireContext())
-//                            .load("https://image.tmdb.org/t/p/w500" + it[i].posterPath)
-//                            .error(R.drawable.ic_launcher_background)
-//                            .into(binding!!.ivDialogMovie)
-//                        i++
-//                    }
-//                }
-//
-//            }
-//        }
+
+        binding?.let {
+            it.tvDialogMovieDesc.text = args.singleDialog.overview
+            it.tvDialogMovieName.text = args.singleDialog.title
+            Glide.with(requireContext()).load("https://image.tmdb.org/t/p/w500"+args.singleDialog.posterPath).into(it.ivDialogMovie)
+        }
 
 
     }
