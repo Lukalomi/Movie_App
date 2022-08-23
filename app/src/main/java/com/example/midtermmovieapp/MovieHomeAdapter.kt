@@ -11,10 +11,12 @@ import com.example.midtermmovieapp.databinding.SingleMovieItemBinding
 
 
 class MovieHomeAdapter(
-    var items: Resource.Success<List<HomeModel.Result>>,
+
     private val context: Context,
     var onClickListener: ((HomeModel.Result) -> Unit)? = null
 ) : RecyclerView.Adapter<MovieHomeAdapter.ItemViewHolder>() {
+    var items: Resource.Success<MutableList<HomeModel.Result>> =
+        Resource.Success<MutableList<HomeModel.Result>>()
 
 
     inner class ItemViewHolder(val binding: SingleMovieItemBinding) :
@@ -32,10 +34,12 @@ class MovieHomeAdapter(
         holder.binding.tvMovieName.text = items.data[position].title
         holder.binding.tvMovieRating.text = items.data[position].voteAverage.toString()
 
-        Glide.with(context).load("https://image.tmdb.org/t/p/w500"+items.data[position].posterPath).error(R.drawable.ic_launcher_background)
+        Glide.with(context)
+            .load("https://image.tmdb.org/t/p/w500" + items.data[position].posterPath)
+            .error(R.drawable.ic_launcher_background)
             .into(holder.binding.ibMovieImage)
 
-        holder.binding.ibMovieImage.setOnClickListener{
+        holder.binding.ibMovieImage.setOnClickListener {
             onClickListener?.invoke(items.data[position])
         }
 
@@ -43,7 +47,6 @@ class MovieHomeAdapter(
     }
 
     override fun getItemCount() = items.data.size
-
 
 
 }

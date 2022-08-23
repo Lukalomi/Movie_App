@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.midtermmovieapp.databinding.FragmentHomeBinding
 import kotlinx.coroutines.launch
 
-class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
+class HomeFragment : Fragment() {
 
     private var binding: FragmentHomeBinding? = null
     private lateinit var adapter: MovieHomeAdapter
@@ -29,16 +29,6 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         return binding!!.root
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.search_menu, menu)
-
-        val search = menu?.findItem(R.id.menu_search)
-        val searchView = search?.actionView as? SearchView
-        searchView?.isSubmitButtonEnabled = true
-        searchView?.setOnQueryTextListener(this)
-
-        return true
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -69,7 +59,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
 
                         }
                         is Resource.Loader -> {
-                            if(it.isLoading != binding!!.pbHome.isVisible) {
+                            if (it.isLoading != binding!!.pbHome.isVisible) {
                                 binding!!.pbHome.visibility = View.GONE
                                 binding!!.tvHomeLoader.visibility = View.GONE
 
@@ -82,31 +72,36 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener {
         }
     }
 
+    private fun searchMovie() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.contentState.collect {
+                    when (it) {
+                        is Resource.Success -> {
+                            adapter = MovieHomeAdapter(it, requireContext())
+                            binding!!.searchAction.setOnQueryTextListener(object :
+                                SearchView.OnQueryTextListener {
+                                override fun onQueryTextSubmit(query: String?): Boolean {
+                                    return true
+                                }
+
+                                override fun onQueryTextChange(newText: String?): Boolean {
+                                    if (newText!!.isNotEmpty()){
+                                        it.data.
+                                    }
+                                    return true
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
-    }
-
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        return true
-    }
-
-    override fun onQueryTextChange(query: String?): Boolean {
-        if(query != null){
-            searchDatabase(query)
-        }
-        return true
-    }
-
-    private fun searchDatabase(query: String) {
-        val searchQuery = "%$query%"
-
-        HomeViewModel.searchDatabase(searchQuery).observe(this, { list ->
-            list.let {
-                MovieHomeAdapter.setData(it)
-            }
-        })
     }
 
 }
