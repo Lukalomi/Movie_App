@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class HomeModel(
     val page: Int,
-    val results: List<Result>,
+    val results: MutableList<Result>,
     @SerializedName("total_pages")
     val totalPages: Int,
     @SerializedName("total_results")

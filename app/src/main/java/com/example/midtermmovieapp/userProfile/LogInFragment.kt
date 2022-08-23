@@ -61,6 +61,8 @@ class LogInFragment : Fragment() {
                         }
                         else {
                             Toast.makeText(requireContext(),it.exception.toString(), Toast.LENGTH_LONG).show()
+                            binding!!.pgLogIn.visibility = View.INVISIBLE
+
                         }
                     }
 

@@ -67,6 +67,8 @@ class RegisterFragment : Fragment() {
                         }
                         else {
                             Toast.makeText(requireContext(),it.exception.toString(),Toast.LENGTH_LONG).show()
+                            binding!!.pgRegister.visibility = View.GONE
+
                         }
                     }
 
