@@ -21,7 +21,11 @@
         android:id="@+id/dialogFragment"
         android:name="com.example.midtermmovieapp.Dialog.DialogFragment"
         android:label="fragment_dialog"
-        tools:layout="@layout/fragment_dialog" />
+        tools:layout="@layout/fragment_dialog" >
+        <argument
+            android:name="SingleDialog"
+            app:argType="com.example.midtermmovieapp.Models.HomeModel$Result" />
+    </fragment>
     <fragment
         android:id="@+id/userProfileFragment"
         android:name="com.example.midtermmovieapp.userProfile.UserProfileFragment"

@@ -1,10 +1,11 @@
 package com.example.midtermmovieapp.Models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 
-
-
+@Parcelize
 data class HomeModel(
     val page: Int,
     val results: List<Result>,
@@ -12,7 +13,8 @@ data class HomeModel(
     val totalPages: Int,
     @SerializedName("total_results")
     val totalResults: Int
-) {
+):Parcelable {
+    @Parcelize
     data class Result(
         val adult: Boolean,
         @SerializedName("backdrop_path")
@@ -36,5 +38,5 @@ data class HomeModel(
         val voteAverage: Double,
         @SerializedName("vote_count")
         val voteCount: Int
-    )
+    ):Parcelable
 }

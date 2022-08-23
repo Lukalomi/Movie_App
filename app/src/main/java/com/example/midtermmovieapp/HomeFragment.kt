@@ -38,10 +38,6 @@ class HomeFragment : Fragment() {
         viewModel.getMovieContent()
 
 
-        binding!!.appCompatImageButton.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
-        }
-
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.contentState.collect {
@@ -50,8 +46,12 @@ class HomeFragment : Fragment() {
                             adapter = MovieHomeAdapter(it, requireContext())
                             binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
                             binding!!.rvHomeRecycler.adapter = adapter
-                            adapter.onClickListener = {
-                                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToDialogFragment())
+                            adapter.onClickListener = { item ->
+                                findNavController().navigate(
+                                    HomeFragmentDirections.actionHomeFragmentToDialogFragment(
+                                        item
+                                    )
+                                )
 
                             }
                         }
@@ -60,7 +60,7 @@ class HomeFragment : Fragment() {
 
                         }
                         is Resource.Loader -> {
-                            if(it.isLoading != binding!!.pbHome.isVisible) {
+                            if (it.isLoading != binding!!.pbHome.isVisible) {
                                 binding!!.pbHome.visibility = View.GONE
                                 binding!!.tvHomeLoader.visibility = View.GONE
 
