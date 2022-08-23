@@ -35,6 +35,10 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+        binding!!.appCompatImageButton.setOnClickListener{
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
+        }
+
         viewModel.getMovieContent()
 
 
@@ -43,7 +47,9 @@ class HomeFragment : Fragment() {
                 viewModel.contentState.collect {
                     when (it) {
                         is Resource.Success -> {
-                            adapter = MovieHomeAdapter(it, requireContext())
+                            adapter = MovieHomeAdapter(requireContext())
+                            adapter.submitList(it)
+//                            adapter = MovieHomeAdapter(it, requireContext())
                             binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
                             binding!!.rvHomeRecycler.adapter = adapter
                             adapter.onClickListener = { item ->
