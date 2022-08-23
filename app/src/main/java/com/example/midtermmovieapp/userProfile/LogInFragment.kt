@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.midtermmovieapp.Models.HomeModel
 import com.example.midtermmovieapp.R
 import com.example.midtermmovieapp.databinding.FragmentLogInBinding
 import com.example.midtermmovieapp.databinding.FragmentRegisterBinding
@@ -93,7 +94,9 @@ class LogInFragment : Fragment() {
             Toast.makeText(requireContext(), "you Haven't Registered", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(requireContext(), "you are Logged In", Toast.LENGTH_SHORT).show()
-            findNavController().navigate(LogInFragmentDirections.actionLogInFragmentToHomeFragment())
+            findNavController().navigate(LogInFragmentDirections.actionLogInFragmentToHomeFragment(
+
+            ))
         }
     }
 

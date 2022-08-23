@@ -1,10 +1,12 @@
 package com.example.midtermmovieapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -13,9 +15,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.midtermmovieapp.Models.HomeModel
 import com.example.midtermmovieapp.databinding.FragmentHomeBinding
 import kotlinx.coroutines.launch
+import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -35,15 +40,16 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        binding!!.appCompatImageButton.setOnClickListener{
+        binding!!.appCompatImageButton.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
         }
 
-        viewModel.getMovieContent()
+        search()
 
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.getMovieContent()
                 viewModel.contentState.collect {
                     when (it) {
                         is Resource.Success -> {
@@ -60,6 +66,7 @@ class HomeFragment : Fragment() {
                                 )
 
                             }
+
                         }
                         is Resource.Error -> {
                             Toast.makeText(requireContext(), it.errorMsg, Toast.LENGTH_SHORT).show()
@@ -77,6 +84,56 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+
+
+    private  fun search() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getMovieContent()
+
+            viewModel.contentState.collect { response ->
+                when (response) {
+                    is Resource.Success -> {
+                        var displayList = response.data
+
+                        binding!!.searchAction.setOnQueryTextListener(object :
+                            SearchView.OnQueryTextListener {
+                            override fun onQueryTextSubmit(query: String?): Boolean {
+                                return true
+                            }
+
+                            override fun onQueryTextChange(newText: String?): Boolean {
+                                if (newText!!.isNotEmpty()) {
+                                    displayList.clear()
+                                    val search = newText.lowercase(Locale.getDefault())
+                                    response.data.forEach {
+                                        if (it.title.lowercase(Locale.getDefault())
+                                                .contains(search)
+                                        ) {
+                                            displayList.add(it)
+                                            Log.d("datasize", displayList.size.toString())
+                                        }
+
+                                    }
+                                    adapter = MovieHomeAdapter(requireContext())
+                                    adapter.submitList(Resource.Success(displayList))
+                                    binding!!.rvHomeRecycler.layoutManager =
+                                        GridLayoutManager(activity, 2)
+                                    binding!!.rvHomeRecycler.adapter = adapter
+                                } else {
+                                    adapter.submitList(Resource.Success(displayList))
+                                }
+
+                                return true
+                            }
+
+                        })
+                    }
+                }
+            }
+        }
+
     }
 
 
