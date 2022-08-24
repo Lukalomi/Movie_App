@@ -95,7 +95,7 @@ class HomeFragment : Fragment() {
             viewModel.contentState.collect { response ->
                 when (response) {
                     is Resource.Success -> {
-                        var displayList = response.data
+                        var displayList = mutableListOf<HomeModel.Result>()
 
                         binding!!.searchAction.setOnQueryTextListener(object :
                             SearchView.OnQueryTextListener {
@@ -122,7 +122,6 @@ class HomeFragment : Fragment() {
                                         GridLayoutManager(activity, 2)
                                     binding!!.rvHomeRecycler.adapter = adapter
                                 } else {
-newText.replace(newText,"lala")
                                     adapter = MovieHomeAdapter(requireContext())
                                     adapter.submitList(Resource.Success(response.data))
                                     binding!!.rvHomeRecycler.layoutManager =
