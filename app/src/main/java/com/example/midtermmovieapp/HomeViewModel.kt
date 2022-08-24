@@ -20,7 +20,9 @@ class HomeViewModel : ViewModel() {
             val response = RetrofitClient.FetchedMovies().getMovies()
             if (response.isSuccessful) {
                 _contentState.value = Resource.Success(response.body()?.results ?: mutableListOf() )
-
+                val d = response.body()!!.results.forEach{
+                    it.title
+                }
             } else {
                 _contentState.value = Resource.Error(response.errorBody()?.toString() ?: "")
 
