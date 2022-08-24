@@ -134,7 +134,7 @@ class HomeFragment : Fragment() {
 
 
                                 } else {
-                                    newText.replace(newText,"lala")
+//                                    newText.replace(newText,"lala")
                                     adapter = MovieHomeAdapter(requireContext())
                                     adapter.submitList(Resource.Success(response.data))
                                     binding!!.rvHomeRecycler.layoutManager =
@@ -159,6 +159,9 @@ class HomeFragment : Fragment() {
                             }
 
                         })
+                    }
+                    else -> {
+                        Log.d("feef","wfwwfw")
                     }
                 }
             }
