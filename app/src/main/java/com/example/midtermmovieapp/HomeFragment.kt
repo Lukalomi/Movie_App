@@ -122,13 +122,32 @@ class HomeFragment : Fragment() {
                                         GridLayoutManager(activity, 2)
                                     binding!!.rvHomeRecycler.adapter = adapter
                                 } else {
+newText.replace(newText,"lala")
+                                    adapter = MovieHomeAdapter(requireContext())
+                                    adapter.submitList(Resource.Success(response.data))
+                                    binding!!.rvHomeRecycler.layoutManager =
+                                        GridLayoutManager(activity, 2)
+                                    binding!!.rvHomeRecycler.adapter = adapter
+                                    adapter.onClickListener = { item ->
+                                        findNavController().navigate(
+                                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
+                                                item
+                                            )
+                                        )
+
+                                    }
+
                                     adapter.submitList(Resource.Success(displayList))
+
                                 }
 
                                 return true
                             }
 
                         })
+                    }
+                    else -> {
+                        Log.d("feef","wfwwfw")
                     }
                 }
             }
