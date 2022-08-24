@@ -19,7 +19,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.midtermmovieapp.Models.HomeModel
 import com.example.midtermmovieapp.databinding.FragmentHomeBinding
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -45,18 +44,18 @@ class HomeFragment : Fragment() {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
         }
 
-
         search()
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getMovieContent()
 
+        viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.getMovieContent()
                 viewModel.contentState.collect {
                     when (it) {
                         is Resource.Success -> {
                             adapter = MovieHomeAdapter(requireContext())
                             adapter.submitList(it)
+//                            adapter = MovieHomeAdapter(it, requireContext())
                             binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
                             binding!!.rvHomeRecycler.adapter = adapter
                             adapter.onClickListener = { item ->
@@ -91,15 +90,15 @@ class HomeFragment : Fragment() {
 
     private  fun search() {
         viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getMovieContent()
 
             viewModel.contentState.collect { response ->
                 when (response) {
                     is Resource.Success -> {
+                        var displayList = response.data
 
                         binding!!.searchAction.setOnQueryTextListener(object :
                             SearchView.OnQueryTextListener {
-                            var displayList = mutableListOf<HomeModel.Result>()
-
                             override fun onQueryTextSubmit(query: String?): Boolean {
                                 return true
                             }
@@ -107,8 +106,7 @@ class HomeFragment : Fragment() {
                             override fun onQueryTextChange(newText: String?): Boolean {
                                 if (newText!!.isNotEmpty()) {
                                     displayList.clear()
-
-                                    var search = newText.lowercase(Locale.getDefault())
+                                    val search = newText.lowercase(Locale.getDefault())
                                     response.data.forEach {
                                         if (it.title.lowercase(Locale.getDefault())
                                                 .contains(search)
@@ -123,18 +121,8 @@ class HomeFragment : Fragment() {
                                     binding!!.rvHomeRecycler.layoutManager =
                                         GridLayoutManager(activity, 2)
                                     binding!!.rvHomeRecycler.adapter = adapter
-                                    adapter.onClickListener = { item ->
-                                        findNavController().navigate(
-                                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-                                                item
-                                            )
-                                        )
-
-                                    }
-
-
                                 } else {
-//                                    newText.replace(newText,"lala")
+newText.replace(newText,"lala")
                                     adapter = MovieHomeAdapter(requireContext())
                                     adapter.submitList(Resource.Success(response.data))
                                     binding!!.rvHomeRecycler.layoutManager =
@@ -149,11 +137,9 @@ class HomeFragment : Fragment() {
 
                                     }
 
+                                    adapter.submitList(Resource.Success(displayList))
+
                                 }
-
-
-
-
 
                                 return true
                             }
