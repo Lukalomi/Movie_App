@@ -4,9 +4,56 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment"
-    >
+    tools:context=".HomeFragment">
 
+
+    <Spinner
+        android:id="@+id/spinnerHome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="50dp"
+        android:entries="@array/spinner_items"
+        android:popupBackground="#4981A6"
+        app:layout_constraintBottom_toTopOf="@+id/rvHomeRecycler"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.01"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvAppName"
+        app:layout_constraintVertical_bias="0.517" />
+
+    <TextView
+        android:id="@+id/tvMovieListType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:text="Movie List Type"
+        android:gravity="center"
+        android:textColor="#A86B6B"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-condensed"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/rvHomeRecycler"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinnerHome"
+        app:layout_constraintVertical_bias="0.796" />
+
+    <TextView
+        android:id="@+id/tvNoMovie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="No Movie Found"
+        android:textColor="#222020"
+        android:textSize="22sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvAppName"
@@ -14,11 +61,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
-        android:text="Movie App"
-        android:textSize="22sp"
-        android:textColor="#CA6A6A"
-        android:textStyle="bold"
         android:fontFamily="sans-serif-condensed"
+        android:text="Movie App"
+        android:textColor="#CA6A6A"
+        android:textSize="22sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
