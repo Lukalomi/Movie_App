@@ -1,15 +1,15 @@
-package com.example.midtermmovieapp
+package com.example.midtermmovieapp.adapters
 
-import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.midtermmovieapp.Models.HomeModel
+import com.example.midtermmovieapp.R
+import com.example.midtermmovieapp.Resource
 import com.example.midtermmovieapp.databinding.SingleMovieItemBinding
 
-//var items: Resource.Success<MutableList<HomeModel.Result>>,
 
 class MovieHomeAdapter(
     private val context: Context,
