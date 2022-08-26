@@ -86,7 +86,7 @@ class HomeFragment : Fragment() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                    getUpcomingMovies()
+
             }
 
         }
@@ -223,26 +223,18 @@ class HomeFragment : Fragment() {
                                         binding!!.rvHomeRecycler.layoutManager =
                                             GridLayoutManager(activity, 2)
                                         binding!!.rvHomeRecycler.adapter = adapterTop
-//                                        adapterTop.onClickListener = { item ->
-//                                            findNavController().navigate(
-//                                                HomeFragmentDirections.actionHomeFragmentToDialogTopFragment(
-//                                                    item,
-//                                                )
-//                                            )
-//                                        }
+                                        adapterTop.onClickListener = { item ->
+                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToTopRatedDialogFragment(item))
+                                        }
 
                                     } else {
                                         adapterTop = MovieTopRatedAdapter(requireContext())
                                         binding!!.rvHomeRecycler.layoutManager =
                                             GridLayoutManager(activity, 2)
                                         binding!!.rvHomeRecycler.adapter = adapterTop
-//                                        adapterTop.onClickListener = {
-//                                            findNavController().navigate(
-//                                                HomeFragmentDirections.actionHomeFragmentToDialogTopFragment(
-//                                                    it,
-//                                                )
-//                                            )
-//                                        }
+                                        adapterTop.onClickListener = { item ->
+                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToTopRatedDialogFragment(item))
+                                        }
 
                                         binding!!.tvNoMovie.visibility = View.GONE
                                         adapterTop.submitList(Resource.Success(response.data))
@@ -312,25 +304,19 @@ class HomeFragment : Fragment() {
                                         binding!!.rvHomeRecycler.layoutManager =
                                             GridLayoutManager(activity, 2)
                                         binding!!.rvHomeRecycler.adapter = adapterUpcoming
-//                                        adapterUpcoming.onClickListener = {
-//                                            findNavController().navigate(
-//                                                HomeFragmentDirections.actionHomeFragmentToDialogUpcomingFragment(
-//                                                    it,
-//                                                )
-//                                            )
-//                                        }
+//
+                                        adapterUpcoming.onClickListener = {
+                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUpcomingDialogFragment(it))
+                                        }
+
 
                                     } else {
                                         adapterUpcoming = UpcomingMoviesAdapter(requireContext())
                                         binding!!.rvHomeRecycler.layoutManager =
                                             GridLayoutManager(activity, 2)
                                         binding!!.rvHomeRecycler.adapter = adapterUpcoming
-                                        adapter.onClickListener = { item ->
-                                            findNavController().navigate(
-                                                HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-                                                    item,
-                                                )
-                                            )
+                                        adapterUpcoming.onClickListener = { item ->
+                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUpcomingDialogFragment(item))
                                         }
 
                                         binding!!.tvNoMovie.visibility = View.GONE
@@ -412,14 +398,9 @@ class HomeFragment : Fragment() {
                             adapterUpcoming.submitList(it)
                             binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
                             binding!!.rvHomeRecycler.adapter = adapterUpcoming
-//                            adapterTop.onClickListener = {
-//                                findNavController().navigate(
-//                                    HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-//                                        it
-//                                    )
-//                                )
-//
-//                            }
+                           adapterUpcoming.onClickListener = { item ->
+                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUpcomingDialogFragment(item))
+                                        }
 
                         }
                         is Resource.Error -> {
@@ -451,14 +432,9 @@ class HomeFragment : Fragment() {
                             adapterTop.submitList(it)
                             binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
                             binding!!.rvHomeRecycler.adapter = adapterTop
-//                            adapterTop.onClickListener = {
-//                                findNavController().navigate(
-//                                    HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-//                                        it
-//                                    )
-//                                )
-//
-//                            }
+                           adapterTop.onClickListener = { item ->
+                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToTopRatedDialogFragment(item))
+                                        }
 
                         }
                         is Resource.Error -> {

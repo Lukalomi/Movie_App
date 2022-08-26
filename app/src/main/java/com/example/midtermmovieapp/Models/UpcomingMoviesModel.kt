@@ -1,7 +1,9 @@
 package com.example.midtermmovieapp.Models
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
-
+@Parcelize
 data class UpcomingMoviesModel(
     val dates: Dates?,
     val page: Int?,
@@ -10,12 +12,13 @@ data class UpcomingMoviesModel(
     val totalPages: Int?,
     @SerializedName("total_results")
     val totalResults: Int?
-) {
+): Parcelable {
+    @Parcelize
     data class Dates(
         val maximum: String?,
         val minimum: String?
-    )
-
+    ):Parcelable
+    @Parcelize
     data class Result(
         val adult: Boolean?,
         @SerializedName("backdrop_path")
@@ -39,5 +42,5 @@ data class UpcomingMoviesModel(
         val voteAverage: Double?,
         @SerializedName("vote_count")
         val voteCount: Int?
-    )
+    ):Parcelable
 }
