@@ -19,7 +19,7 @@ class SplashScreenNewFragment : Fragment() {
 
         Handler(Looper.myLooper()!!).postDelayed({
             findNavController().navigate(R.id.action_splashScreenNewFragment_to_homeFragment)
-        }, 5000)
+        }, 3000)
         return view
     }
 }
