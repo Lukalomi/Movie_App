@@ -6,13 +6,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.midtermmovieapp.R
 import com.example.midtermmovieapp.databinding.FragmentUserProfileBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class UserProfileFragment : Fragment() {
 
  private var binding: FragmentUserProfileBinding? = null
+    lateinit var auth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,12 +28,22 @@ class UserProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        auth = FirebaseAuth.getInstance()
+
         binding!!.btnLogin.setOnClickListener{
             findNavController().navigate(UserProfileFragmentDirections.actionUserProfileFragmentToLogInFragment())
         }
         binding!!.btnRegister.setOnClickListener{
             findNavController().navigate(UserProfileFragmentDirections.actionUserProfileFragmentToRegisterFragment())
         }
+
+        binding!!.btnSignOut.setOnClickListener {
+            auth.signOut()
+            Toast.makeText(requireContext(), "User Signed Out",Toast.LENGTH_LONG).show()
+            findNavController().navigate(UserProfileFragmentDirections.actionUserProfileFragmentToHomeFragment())
+        }
+
+
     }
 
     override fun onDestroyView() {

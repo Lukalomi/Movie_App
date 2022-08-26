@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_userProfileFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/logInFragment"
@@ -60,7 +63,9 @@
         tools:layout="@layout/fragment_register" >
         <action
             android:id="@+id/action_registerFragment_to_logInFragment"
-            app:destination="@id/logInFragment" />
+            app:destination="@id/logInFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/splashScreenNewFragment"
@@ -69,7 +74,9 @@
         tools:layout="@layout/fragment_splash_screen_new" >
         <action
             android:id="@+id/action_splashScreenNewFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/topRatedDialogFragment"
