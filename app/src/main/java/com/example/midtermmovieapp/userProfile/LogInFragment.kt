@@ -27,7 +27,7 @@ class LogInFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentLogInBinding.inflate(inflater,container,false)
+        binding = FragmentLogInBinding.inflate(inflater, container, false)
         return binding!!.root
     }
 
@@ -36,6 +36,7 @@ class LogInFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
 
         binding!!.btnLogin.setOnClickListener {
+            checkFields()
             logInUser()
         }
     }
@@ -55,13 +56,16 @@ class LogInFragment : Fragment() {
                         binding!!.etPass.text.toString()
                     ).addOnCompleteListener {
 
-                        if(it.isSuccessful) {
+                        if (it.isSuccessful) {
                             checkLoggedInstance()
                             binding!!.pgLogIn.visibility = View.INVISIBLE
 
-                        }
-                        else {
-                            Toast.makeText(requireContext(),it.exception.toString(), Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                it.exception.toString(),
+                                Toast.LENGTH_LONG
+                            ).show()
                             binding!!.pgLogIn.visibility = View.INVISIBLE
 
                         }
@@ -82,9 +86,10 @@ class LogInFragment : Fragment() {
 
     private fun checkFields() {
         if (binding!!.etEmail.text.toString().isEmpty() && binding!!.etPass.text.toString()
-                .isEmpty())
-        {
-            Toast.makeText(requireContext(), "Please Fill Out Every Field", Toast.LENGTH_SHORT).show()
+                .isEmpty()
+        ) {
+            Toast.makeText(requireContext(), "Please Fill Out Every Field", Toast.LENGTH_SHORT)
+                .show()
 
         }
     }
@@ -92,11 +97,17 @@ class LogInFragment : Fragment() {
     private fun checkLoggedInstance() {
         if (auth.currentUser == null) {
             Toast.makeText(requireContext(), "you Haven't Registered", Toast.LENGTH_SHORT).show()
-        } else {
+        } else if (auth.currentUser !== null) {
             Toast.makeText(requireContext(), "you are Logged In", Toast.LENGTH_SHORT).show()
-            findNavController().navigate(LogInFragmentDirections.actionLogInFragmentToHomeFragment(
+            findNavController().navigate(
+                LogInFragmentDirections.actionLogInFragmentToHomeFragment(
 
-            ))
+                )
+            )
+
+        } else {
+
+            Toast.makeText(requireContext(), "you are already Logged in", Toast.LENGTH_SHORT).show()
         }
     }
 
