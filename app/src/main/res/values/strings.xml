@@ -7,13 +7,14 @@
     <string name="password">Password</string>
     <string name="email">Email</string>
 
-    
-    
+
     <string-array name="spinner_items">
         <item>Most Popular</item>
         <item>Top Rated</item>
         <item>Upcoming Movies</item>
 
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

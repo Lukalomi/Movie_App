@@ -35,9 +35,6 @@
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_log_in.xml" value="0.24010416666666667" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_login.xml" value="0.25416666666666665" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_register.xml" value="0.24010416666666667" />
-        <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_top_rated_dialog.xml" value="0.25416666666666665" />
-        <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_up_coming_dialog.xml" value="0.25416666666666665" />
-        <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_upcoming_dialog.xml" value="0.25416666666666665" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_user_profile.xml" value="0.25416666666666665" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/single_movie_item.xml" value="0.18841698841698842" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2135" />
@@ -55,10 +52,13 @@
         <entry key="..\:/Tbc Android Homeworks/MovieApp/app/src/main/res/drawable/roundedbtn_light.xml" value="0.1785" />
         <entry key="..\:/Tbc Android Homeworks/MovieApp/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Tbc Android Homeworks/MovieApp/app/src/main/res/layout/fragment_dialog.xml" value="0.1408514492753623" />
-        <entry key="..\:/Tbc Android Homeworks/MovieApp/app/src/main/res/layout/fragment_home.xml" value="0.1408514492753623" />
+        <entry key="..\:/Tbc Android Homeworks/MovieApp/app/src/main/res/layout/fragment_favorites.xml" value="0.22135416666666666" />
+        <entry key="..\:/Tbc Android Homeworks/MovieApp/app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="..\:/Tbc Android Homeworks/MovieApp/app/src/main/res/layout/fragment_spalsh_screen.xml" value="0.1408514492753623" />
         <entry key="..\:/Tbc Android Homeworks/MovieApp/app/src/main/res/layout/fragment_splash_screen.xml" value="0.1408514492753623" />
         <entry key="..\:/Tbc Android Homeworks/MovieApp/app/src/main/res/layout/fragment_splash_screen_new.xml" value="0.1408514492753623" />
+        <entry key="..\:/Tbc Android Homeworks/MovieApp/app/src/main/res/layout/fragment_user_profile.xml" value="0.22135416666666666" />
+        <entry key="..\:/Tbc Android Homeworks/MovieApp/app/src/main/res/layout/single_movie_item.xml" value="0.1408514492753623" />
       </map>
     </option>
   </component>

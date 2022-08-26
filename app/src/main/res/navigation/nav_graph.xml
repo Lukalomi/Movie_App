@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_userProfileFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
     </fragment>
     <fragment
         android:id="@+id/logInFragment"
@@ -91,4 +94,9 @@
             app:argType="com.example.midtermmovieapp.Models.UpcomingMoviesModel$Result"
             app:nullable="true" />
     </fragment>
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.midtermmovieapp.userProfile.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites" />
 </navigation>
