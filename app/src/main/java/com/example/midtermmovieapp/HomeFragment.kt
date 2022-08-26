@@ -101,7 +101,6 @@ class HomeFragment : Fragment() {
                 when (response) {
                     is Resource.Success -> {
                         var displayList = mutableListOf<HomeModel.Result>()
-
                         binding!!.searchAction.setOnQueryTextListener(object :
                             SearchView.OnQueryTextListener {
                             override fun onQueryTextSubmit(query: String?): Boolean {
