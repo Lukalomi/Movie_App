@@ -46,6 +46,9 @@
         <action
             android:id="@+id/action_userProfileFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
     </fragment>
     <fragment
         android:id="@+id/logInFragment"
