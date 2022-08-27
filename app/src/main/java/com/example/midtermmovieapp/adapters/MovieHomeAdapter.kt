@@ -1,8 +1,11 @@
 package com.example.midtermmovieapp.adapters
 
 import android.content.Context
+import android.graphics.Movie
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.midtermmovieapp.Models.HomeModel
@@ -13,20 +16,34 @@ import com.example.midtermmovieapp.databinding.SingleMovieItemBinding
 
 class MovieHomeAdapter(
     private val context: Context,
-    var onClickListener: ((HomeModel.Result) -> Unit)? = null
-) : RecyclerView.Adapter<MovieHomeAdapter.ItemViewHolder>() {
+    var onClickListener: ((HomeModel.Result) -> Unit)? = null,
+    var onFavClickListener: ((HomeModel.Result) -> Unit)? = null
+) : PagingDataAdapter<HomeModel.Result,MovieHomeAdapter.ItemViewHolder>(diffUtilCallback()) {
 
-    var items2: Resource.Success<MutableList<HomeModel.Result>> = Resource.Success(mutableListOf())
 
-    fun submitList(
-        newList:
-        Resource.Success<MutableList<HomeModel.Result>>
-    ) {
-        items2 = newList
-    }
 
     inner class ItemViewHolder(val binding: SingleMovieItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        var model: HomeModel.Result? = null
+        fun onBind() {
+            model = getItem(bindingAdapterPosition)
+            binding.apply {
+                tvMovieName.text = model?.title
+                tvMovieRating.text = model?.voteAverage.toString()
+                Glide.with(context)
+                    .load("https://image.tmdb.org/t/p/w500" +  model?.posterPath)
+                    .error(R.drawable.ic_launcher_background)
+                    .into(ibMovieImage)
+                ibMovieImage.setOnClickListener {
+                    onClickListener?.invoke(model!!)
+                }
+                ivFavLogo.setOnClickListener {
+                    onFavClickListener?.invoke(model!!)
+                }
+            }
+        }
+
+
     }
 
 
@@ -37,23 +54,27 @@ class MovieHomeAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.binding.tvMovieName.text = items2.data[position].title
-        holder.binding.tvMovieName.text = items2.data[position].title
-        holder.binding.tvMovieRating.text = items2.data[position].voteAverage.toString()
 
-        Glide.with(context)
-            .load("https://image.tmdb.org/t/p/w500" + items2.data[position].posterPath)
-            .error(R.drawable.ic_launcher_background)
-            .into(holder.binding.ibMovieImage)
+    holder.onBind()
+    }
 
-        holder.binding.ibMovieImage.setOnClickListener {
-            onClickListener?.invoke(items2.data[position])
+    class diffUtilCallback():DiffUtil.ItemCallback<HomeModel.Result>() {
+        override fun areItemsTheSame(
+            oldItem: HomeModel.Result,
+            newItem: HomeModel.Result
+        ): Boolean {
+          return  oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(
+            oldItem: HomeModel.Result,
+            newItem: HomeModel.Result
+        ): Boolean {
+            return oldItem == newItem
         }
 
 
     }
-
-    override fun getItemCount() = items2.data.size
 
 
 }

@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".userProfile.UserProfileFragment"
-    >
+    tools:context=".userProfile.UserProfileFragment">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="wrap_content"
@@ -31,6 +30,7 @@
         android:id="@+id/tvWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed"
         android:text="@string/welcome"
         android:textColor="#000000"
         android:textSize="28sp"
@@ -43,9 +43,10 @@
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/appCompatImageButton3"
-        android:layout_width="280dp"
-        android:layout_height="320dp"
+        android:layout_width="160dp"
+        android:layout_height="180dp"
         android:layout_marginTop="56dp"
+        android:layout_marginEnd="200dp"
         android:background="@drawable/ic_auth_welcome"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,16 +54,16 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnRegister"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:background="@drawable/roundedbtn_light"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginTop="38dp"
-        android:text="@string/register"
         android:layout_marginStart="64dp"
+        android:layout_marginTop="58dp"
         android:layout_marginEnd="64dp"
+        android:background="@drawable/roundedbtn_light"
+        android:text="@string/register"
         android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appCompatImageButton3" />
@@ -89,17 +90,47 @@
         android:id="@+id/btnSignOut"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@drawable/roundedbtn_light"
+        android:layout_marginStart="104dp"
+        android:layout_marginEnd="104dp"
+        android:layout_marginBottom="10dp"
+        android:background="#510B7183"
         android:text="Sign Out"
         android:textAllCaps="false"
         android:textColor="#222020"
-        android:layout_marginBottom="10dp"
         android:textSize="16sp"
-        android:layout_marginStart="64dp"
-        android:layout_marginEnd="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btnStarFav"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="117dp"
+        android:layout_marginBottom="127dp"
+        android:background="@drawable/ic_star_svg"
+        app:layout_constraintBottom_toTopOf="@+id/btnRegister"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.107"
+        app:layout_constraintStart_toEndOf="@+id/tvFavorites"
+        app:layout_constraintTop_toBottomOf="@+id/tvWelcome" />
+
+    <TextView
+        android:id="@+id/tvFavorites"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="126dp"
+        android:layout_marginBottom="138dp"
+        android:text="Favorites"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toTopOf="@+id/btnRegister"
+        app:layout_constraintStart_toEndOf="@+id/appCompatImageButton3"
+        app:layout_constraintTop_toBottomOf="@+id/tvWelcome" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class TopRatedMoviesModel(
     val page: Int?,
-    val results: MutableList<Result?>?,
+    val results: MutableList<Result>?,
     @SerializedName("total_pages")
     val totalPages: Int?,
     @SerializedName("total_results")

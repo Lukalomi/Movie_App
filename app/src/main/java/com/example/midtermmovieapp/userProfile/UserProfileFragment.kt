@@ -42,7 +42,9 @@ class UserProfileFragment : Fragment() {
             Toast.makeText(requireContext(), "User Signed Out",Toast.LENGTH_LONG).show()
             findNavController().navigate(UserProfileFragmentDirections.actionUserProfileFragmentToHomeFragment())
         }
-
+        binding!!.btnStarFav.setOnClickListener() {
+            findNavController().navigate(UserProfileFragmentDirections.actionUserProfileFragmentToFavoritesFragment())
+        }
 
     }
 
