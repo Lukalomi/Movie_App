@@ -1,7 +1,9 @@
 package com.example.midtermmovieapp
 
+import android.content.ContentValues.TAG
 import android.content.Loader
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +25,12 @@ import com.example.midtermmovieapp.adapters.MovieHomeAdapter
 import com.example.midtermmovieapp.adapters.MovieTopRatedAdapter
 import com.example.midtermmovieapp.adapters.UpcomingMoviesAdapter
 import com.example.midtermmovieapp.databinding.FragmentHomeBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
@@ -34,7 +43,10 @@ class HomeFragment : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var adapterTop: MovieTopRatedAdapter
     private lateinit var adapterUpcoming: UpcomingMoviesAdapter
-    private val db = Firebase.firestore.collection("Movies")
+    private var firebase = Firebase.firestore.collection("Movie")
+    private lateinit var firebaseAuth: FirebaseAuth
+    private var isInMyFavorites = false
+    private var firebaseDB = Firebase.database
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,8 +61,27 @@ class HomeFragment : Fragment() {
 
 
 
-        binding!!.appCompatImageButton.setOnClickListener {
+        binding!!.btnFavorite.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
+        }
+        binding!!.btnFavorite.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
+        }
+        firebaseAuth = FirebaseAuth.getInstance()
+        if(firebaseAuth.currentUser != null) {
+            checkIsFavorite()
+        }
+
+        binding!!.appCompatImageButton.setOnClickListener {
+            if (firebaseAuth.currentUser == null) {
+                Toast.makeText(requireContext(), "You're Not LoggedIn", Toast.LENGTH_SHORT).show()
+            }else{
+                if (isInMyFavorites){
+                    removeFromFavorites()
+                }else{
+                    addToFavorites()
+                }
+            }
         }
 
 
@@ -346,6 +377,66 @@ class HomeFragment : Fragment() {
             }
         }
     }
+    private fun checkIsFavorite(){
+        val ref = FirebaseDatabase.getInstance().getReference("Users")
+        ref.child(firebaseAuth.uid!!).child("Favorites").child(getPopularMoviesPager().toString())
+            .addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapthot: DataSnapshot) {
+                    isInMyFavorites = snapthot.exists()
+                    if (isInMyFavorites){
+                        Log.d(TAG,"onDataChange: Available in favorite")
+                        binding!!.btnFavorite.setOnClickListener {  }
+                        binding!!.btnFavorite.text = "Remove Favorite"
+                    }else{
+                        Log.d(TAG,"onDataChange: Not Available in favorite")
+                        binding!!.btnFavorite.setOnClickListener {  }
+                        binding!!.btnFavorite.text = "Add Favorite"
+                    }
+                }
+                override fun onCancelled(error: DatabaseError){
+
+                }
+            })
+    }
+
+    private fun addToFavorites(){
+        Log.d(TAG, "addToFavorites: Add to fav")
+        val timestamp = System.currentTimeMillis()
+        val hashMap = HashMap <String, Any>()
+        hashMap["movieId"] = getPopularMoviesPager()
+        hashMap["timestamp"] = timestamp
+
+        val ref = FirebaseDatabase.getInstance().getReference("Users")
+        ref.child(firebaseAuth.uid!!).child("Favorites").child(getPopularMoviesPager().toString())
+            .setValue(hashMap)
+            .addOnSuccessListener {
+                Log.d(TAG, "addToFavorites: add to fav")
+                Toast.makeText(requireContext(), "Added to favorites", Toast.LENGTH_SHORT).show()
+
+            }
+            .addOnFailureListener { e->
+                Log.d(TAG, "add to favorites: failed to add to ${e.message}")
+                Toast.makeText(requireContext(), "failed to add to ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+    private fun removeFromFavorites(){
+        Log.d(TAG, "removeFromFavorites: Removing from fav")
+        val ref = FirebaseDatabase.getInstance().getReference("Users")
+        ref.child(firebaseAuth.uid!!).child("Favorites").child(getPopularMoviesPager().toString())
+            .removeValue()
+            .addOnSuccessListener {
+                Log.d(TAG, "removeFromFavorites: Removed from fav")
+                Toast.makeText(requireContext(), "Removed from favorites", Toast.LENGTH_SHORT).show()
+
+            }
+            .addOnFailureListener { e->
+                Log.d(TAG, "removeFromFavorites: Failed to remove from fav due to ${e.message}")
+                Toast.makeText(requireContext(), "failed to remove from fav due to ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
+
 
 
     override fun onDestroyView() {
