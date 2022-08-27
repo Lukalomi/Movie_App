@@ -12,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,10 +21,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.map
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.midtermmovieapp.Models.HomeModel
-import com.example.midtermmovieapp.adapters.LoaderAdapter
-import com.example.midtermmovieapp.adapters.MovieHomeAdapter
-import com.example.midtermmovieapp.adapters.MovieTopRatedAdapter
-import com.example.midtermmovieapp.adapters.UpcomingMoviesAdapter
+import com.example.midtermmovieapp.adapters.*
 import com.example.midtermmovieapp.databinding.FragmentHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -41,6 +39,7 @@ class HomeFragment : Fragment() {
     private var binding: FragmentHomeBinding? = null
     private lateinit var adapter: MovieHomeAdapter
     private val viewModel: HomeViewModel by viewModels()
+    private lateinit var searchAdapter: HomeNormalAdapter
     private lateinit var adapterTop: MovieTopRatedAdapter
     private lateinit var adapterUpcoming: UpcomingMoviesAdapter
     private var firebase = Firebase.firestore.collection("Movie")
@@ -67,22 +66,26 @@ class HomeFragment : Fragment() {
         binding!!.btnFavorite.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
         }
-        firebaseAuth = FirebaseAuth.getInstance()
-        if(firebaseAuth.currentUser != null) {
-            checkIsFavorite()
-        }
 
         binding!!.appCompatImageButton.setOnClickListener {
-            if (firebaseAuth.currentUser == null) {
-                Toast.makeText(requireContext(), "You're Not LoggedIn", Toast.LENGTH_SHORT).show()
-            }else{
-                if (isInMyFavorites){
-                    removeFromFavorites()
-                }else{
-                    addToFavorites()
-                }
-            }
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
         }
+//        firebaseAuth = FirebaseAuth.getInstance()
+//        if(firebaseAuth.currentUser != null) {
+//            checkIsFavorite()
+//        }
+//
+//        binding!!.appCompatImageButton.setOnClickListener {
+//            if (firebaseAuth.currentUser == null) {
+//                Toast.makeText(requireContext(), "You're Not LoggedIn", Toast.LENGTH_SHORT).show()
+//            }else{
+//                if (isInMyFavorites){
+//                    removeFromFavorites()
+//                }else{
+//                    addToFavorites()
+//                }
+//            }
+//        }
 
 
         val customList = listOf(
@@ -104,18 +107,21 @@ class HomeFragment : Fragment() {
                 id: Long
             ) {
                 if (position == 0) {
-//                    searchPopularPager()
                     getPopularMoviesPager()
-                    binding!!.tvMovieListType.text = "Popular Movies"
+                    searchPager()
+                    binding!!.tvMovieListType.text = getString(R.string.popular_movies)
                 }
                 if (position == 1) {
                     getTopMoviesPager()
-                    binding!!.tvMovieListType.text = "Top Rated Movies"
+                    searchPager()
+                    binding!!.tvMovieListType.text = getString(R.string.top_rated_movies)
                 }
 
                 if (position == 2) {
                     getUpcomingMoviesPager()
-                    binding!!.tvMovieListType.text = "Upcoming Movies"
+                    searchPager()
+
+                    binding!!.tvMovieListType.text = getString(R.string.upcoming_movies)
                 }
 
             }
@@ -129,186 +135,86 @@ class HomeFragment : Fragment() {
     }
 
 
-//    private fun searchPopularPager() {
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                viewModel.moviePager.collect { response ->
-//                    var displayList: MutableList<HomeModel.Result> = mutableListOf()
-//
-//
-//                    binding!!.searchAction.setOnQueryTextListener(object :
-//                        SearchView.OnQueryTextListener {
-//                        override fun onQueryTextSubmit(query: String?): Boolean {
-//                            return true
-//                        }
-//
-//                        override fun onQueryTextChange(newText: String?): Boolean {
-//                            if (newText!!.isNotEmpty()) {
-//                                displayList.clear()
-//                                val search = newText.lowercase(Locale.getDefault())
-//                                response.map {
-//                                    if (it.title.lowercase(Locale.getDefault())
-//                                            .contains(search)
-//                                    ) {
-//                                        displayList.add(it)
-//                                    }
-//
-//                                }
-//
-//
-//                                if (displayList.size == 0) {
-//                                    binding!!.tvNoMovie.visibility = View.VISIBLE
-//                                    binding!!.tvNoMovie.setText("Movie $newText is not available")
-//                                } else {
-//                                    binding!!.tvNoMovie.visibility = View.GONE
-//
-//                                }
-//
-//                                adapter = MovieHomeAdapter(requireContext())
-//                                viewLifecycleOwner.lifecycleScope.launch {
-//                                    adapter.submitData(response)
-//                                    binding!!.rvHomeRecycler.layoutManager =
-//                                        GridLayoutManager(activity, 2)
-//                                    binding!!.rvHomeRecycler.adapter = adapter
-//                                    adapter.onClickListener = {
-//                                        findNavController().navigate(
-//                                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-//                                                it,
-//                                            )
-//                                        )
-//
-//                                    }
-//                                }
-//
-//
-//                            } else {
-//                                viewLifecycleOwner.lifecycleScope.launch {
-//                                    adapter = MovieHomeAdapter(requireContext())
-//                                    binding!!.rvHomeRecycler.layoutManager =
-//                                        GridLayoutManager(activity, 2)
-//                                    binding!!.rvHomeRecycler.adapter = adapter
-//                                    adapter.onClickListener = { item ->
-//                                        findNavController().navigate(
-//                                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-//                                                item,
-//                                            )
-//                                        )
-//                                    }
-//
-//                                    binding!!.tvNoMovie.visibility = View.GONE
-//                                    adapter.submitData(response)
-//                                }
-//
-//
-//                            }
-//
-//                            return true
-//                        }
-//
-//                    })
-//                }
-//            }
-//        }
-//    }
+    private fun searchPager() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.newState.collect {
+                    var displayList: MutableList<HomeModel.Result> = mutableListOf()
 
-//    private fun searchPopular() {
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                viewModel.contentState.collect { response ->
-//                    when (response) {
-//                        is Resource.Success -> {
-//                            var displayList = mutableListOf<HomeModel.Result>()
-//
-//                            binding!!.searchAction.setOnQueryTextListener(object :
-//                                SearchView.OnQueryTextListener {
-//                                override fun onQueryTextSubmit(query: String?): Boolean {
-//                                    return true
-//                                }
-//
-//                                override fun onQueryTextChange(newText: String?): Boolean {
-//                                    if (newText!!.isNotEmpty()) {
-//                                        displayList.clear()
-//                                        val search = newText.lowercase(Locale.getDefault())
-//                                        response.data.forEach {
-//                                            if (it.title.lowercase(Locale.getDefault())
-//                                                    .contains(search)
-//                                            ) {
-//                                                displayList.add(it)
-//                                            }
-//
-//                                        }
-//                                        if (displayList.size == 0) {
-//                                            binding!!.tvNoMovie.visibility = View.VISIBLE
-//                                            binding!!.tvNoMovie.setText("Movie $newText is not available")
-//                                        } else {
-//                                            binding!!.tvNoMovie.visibility = View.GONE
-//
-//                                        }
-//
-//                                        adapter = MovieHomeAdapter(requireContext())
-//                                        adapter.submitList(Resource.Success(displayList))
-//                                        binding!!.rvHomeRecycler.layoutManager =
-//                                            GridLayoutManager(activity, 2)
-//                                        binding!!.rvHomeRecycler.adapter = adapter
-//                                        adapter.onClickListener = {
-//                                            findNavController().navigate(
-//                                                HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-//                                                    it,
-//                                                )
-//                                            )
-//
-//                                        }
-//
-//                                    } else {
-//                                        adapter = MovieHomeAdapter(requireContext())
-//                                        binding!!.rvHomeRecycler.layoutManager =
-//                                            GridLayoutManager(activity, 2)
-//                                        binding!!.rvHomeRecycler.adapter = adapter
-//                                        adapter.onClickListener = { item ->
-//                                            findNavController().navigate(
-//                                                HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-//                                                    item,
-//                                                )
-//                                            )
-//                                        }
-//
-//                                        binding!!.tvNoMovie.visibility = View.GONE
-//                                        adapter.submitList(Resource.Success(response.data))
-//
-//
-//                                    }
-//
-//                                    return true
-//                                }
-//
-//                            })
-//                        }
-//                        is Resource.Error -> {
-//                            Toast.makeText(requireContext(), response.errorMsg, Toast.LENGTH_SHORT)
-//                                .show()
-//
-//                        }
-//                        is Resource.Loader -> {
-//                            if (response.isLoading != binding!!.pbHome.isVisible) {
-//                                binding!!.pbHome.visibility = View.GONE
-//                                binding!!.tvHomeLoader.visibility = View.GONE
-//
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//    }
+                    when (it) {
 
+                        is Resource.Success -> {
+                            binding!!.searchAction.setOnQueryTextListener(object :
+                                SearchView.OnQueryTextListener {
+                                override fun onQueryTextSubmit(query: String?): Boolean {
+                                    return true
+                                }
+
+                                override fun onQueryTextChange(newText: String?): Boolean {
+                                    viewModel.getSearchedMovies(query = newText.toString())
+                                    if (newText!!.isNotEmpty()) {
+                                        var search = newText!!.lowercase(Locale.getDefault())
+                                        it.data.forEach {
+                                            if (it.title.lowercase(Locale.getDefault())
+                                                    .contains(search)
+                                            ) {
+                                                displayList.add(it)
+                                            }
+                                        }
+
+                                        searchAdapter = HomeNormalAdapter(requireContext())
+                                        searchAdapter.submitList(Resource.Success(displayList))
+                                        binding!!.rvHomeRecycler.layoutManager =
+                                            GridLayoutManager(activity, 2)
+                                        binding!!.rvHomeRecycler.adapter = searchAdapter
+                                        if (displayList.size > 0) {
+                                            binding!!.pbHome.visibility = View.GONE
+
+                                        }
+                                        if(displayList.size < 0) {
+                                            binding!!.pbHome.visibility = View.GONE
+
+                                        }
+
+
+                                    } else {
+                                        getPopularMoviesPager()
+                                    }
+
+
+                                    return true
+
+                                }
+
+                            })
+                        }
+
+                        is Resource.Error -> {
+                            Log.d("Error", it.errorMsg)
+                        }
+
+
+                        is Resource.Loader -> {
+                            if (it.isLoading != binding!!.pbHome.isVisible) {
+                                binding!!.pbHome.visibility = View.GONE
+                                binding!!.tvHomeLoader.visibility = View.GONE
+
+                            }
+                        }
+
+
+                    }
+                }
+            }
+        }
+    }
 
     private fun getPopularMoviesPager() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                binding!!.pbHome.visibility = View.GONE
-                binding!!.tvHomeLoader.visibility = View.GONE
                 viewModel.moviePager.collect {
+                    binding!!.pbHome.visibility = View.GONE
+                    binding!!.tvHomeLoader.visibility = View.GONE
                     adapter = MovieHomeAdapter(requireContext())
                     binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
                     binding!!.rvHomeRecycler.adapter = adapter
@@ -331,15 +237,13 @@ class HomeFragment : Fragment() {
     private fun getTopMoviesPager() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                binding!!.pbHome.visibility = View.GONE
-                binding!!.tvHomeLoader.visibility = View.GONE
+
                 viewModel.movieTopPager.collect {
                     adapterTop = MovieTopRatedAdapter(requireContext())
                     binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
                     binding!!.rvHomeRecycler.adapter = adapterTop
                     adapterTop.withLoadStateFooter(footer = LoaderAdapter())
                     adapterTop.submitData(it)
-
 //                    adapterTop.onClickListener = { item ->
 //                        findNavController().navigate(
 //                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
@@ -356,15 +260,12 @@ class HomeFragment : Fragment() {
     private fun getUpcomingMoviesPager() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                binding!!.pbHome.visibility = View.GONE
-                binding!!.tvHomeLoader.visibility = View.GONE
                 viewModel.movieUpcomingPager.collect {
                     adapterUpcoming = UpcomingMoviesAdapter(requireContext())
                     binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
                     binding!!.rvHomeRecycler.adapter = adapterUpcoming
                     adapterUpcoming.withLoadStateFooter(footer = LoaderAdapter())
                     adapterUpcoming.submitData(it)
-
 //                    adapterTop.onClickListener = { item ->
 //                        findNavController().navigate(
 //                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
@@ -377,66 +278,63 @@ class HomeFragment : Fragment() {
             }
         }
     }
-    private fun checkIsFavorite(){
-        val ref = FirebaseDatabase.getInstance().getReference("Users")
-        ref.child(firebaseAuth.uid!!).child("Favorites").child(getPopularMoviesPager().toString())
-            .addValueEventListener(object : ValueEventListener{
-                override fun onDataChange(snapthot: DataSnapshot) {
-                    isInMyFavorites = snapthot.exists()
-                    if (isInMyFavorites){
-                        Log.d(TAG,"onDataChange: Available in favorite")
-                        binding!!.btnFavorite.setOnClickListener {  }
-                        binding!!.btnFavorite.text = "Remove Favorite"
-                    }else{
-                        Log.d(TAG,"onDataChange: Not Available in favorite")
-                        binding!!.btnFavorite.setOnClickListener {  }
-                        binding!!.btnFavorite.text = "Add Favorite"
-                    }
-                }
-                override fun onCancelled(error: DatabaseError){
-
-                }
-            })
-    }
-
-    private fun addToFavorites(){
-        Log.d(TAG, "addToFavorites: Add to fav")
-        val timestamp = System.currentTimeMillis()
-        val hashMap = HashMap <String, Any>()
-        hashMap["movieId"] = getPopularMoviesPager()
-        hashMap["timestamp"] = timestamp
-
-        val ref = FirebaseDatabase.getInstance().getReference("Users")
-        ref.child(firebaseAuth.uid!!).child("Favorites").child(getPopularMoviesPager().toString())
-            .setValue(hashMap)
-            .addOnSuccessListener {
-                Log.d(TAG, "addToFavorites: add to fav")
-                Toast.makeText(requireContext(), "Added to favorites", Toast.LENGTH_SHORT).show()
-
-            }
-            .addOnFailureListener { e->
-                Log.d(TAG, "add to favorites: failed to add to ${e.message}")
-                Toast.makeText(requireContext(), "failed to add to ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-    private fun removeFromFavorites(){
-        Log.d(TAG, "removeFromFavorites: Removing from fav")
-        val ref = FirebaseDatabase.getInstance().getReference("Users")
-        ref.child(firebaseAuth.uid!!).child("Favorites").child(getPopularMoviesPager().toString())
-            .removeValue()
-            .addOnSuccessListener {
-                Log.d(TAG, "removeFromFavorites: Removed from fav")
-                Toast.makeText(requireContext(), "Removed from favorites", Toast.LENGTH_SHORT).show()
-
-            }
-            .addOnFailureListener { e->
-                Log.d(TAG, "removeFromFavorites: Failed to remove from fav due to ${e.message}")
-                Toast.makeText(requireContext(), "failed to remove from fav due to ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-
-
+//    private fun checkIsFavorite(){
+//        val ref = FirebaseDatabase.getInstance().getReference("Users")
+//        ref.child(firebaseAuth.uid!!).child("Favorites").child(getPopularMoviesPager().toString())
+//            .addValueEventListener(object : ValueEventListener{
+//                override fun onDataChange(snapthot: DataSnapshot) {
+//                    isInMyFavorites = snapthot.exists()
+//                    if (isInMyFavorites){
+//                        Log.d(TAG,"onDataChange: Available in favorite")
+//                        binding!!.btnFavorite.setOnClickListener {  }
+//                        binding!!.btnFavorite.text = "Remove Favorite"
+//                    }else{
+//                        Log.d(TAG,"onDataChange: Not Available in favorite")
+//                        binding!!.btnFavorite.setOnClickListener {  }
+//                        binding!!.btnFavorite.text = "Add Favorite"
+//                    }
+//                }
+//                override fun onCancelled(error: DatabaseError){
+//
+//                }
+//            })
+//    }
+//
+//    private fun addToFavorites(){
+//        Log.d(TAG, "addToFavorites: Add to fav")
+//        val timestamp = System.currentTimeMillis()
+//        val hashMap = HashMap <String, Any>()
+//        hashMap["movieId"] = getPopularMoviesPager()
+//        hashMap["timestamp"] = timestamp
+//
+//        val ref = FirebaseDatabase.getInstance().getReference("Users")
+//        ref.child(firebaseAuth.uid!!).child("Favorites").child(getPopularMoviesPager().toString())
+//            .setValue(hashMap)
+//            .addOnSuccessListener {
+//                Log.d(TAG, "addToFavorites: add to fav")
+//                Toast.makeText(requireContext(), "Added to favorites", Toast.LENGTH_SHORT).show()
+//
+//            }
+//            .addOnFailureListener { e->
+//                Log.d(TAG, "add to favorites: failed to add to ${e.message}")
+//                Toast.makeText(requireContext(), "failed to add to ${e.message}", Toast.LENGTH_SHORT).show()
+//            }
+//    }
+//    private fun removeFromFavorites(){
+//        Log.d(TAG, "removeFromFavorites: Removing from fav")
+//        val ref = FirebaseDatabase.getInstance().getReference("Users")
+//        ref.child(firebaseAuth.uid!!).child("Favorites").child(getPopularMoviesPager().toString())
+//            .removeValue()
+//            .addOnSuccessListener {
+//                Log.d(TAG, "removeFromFavorites: Removed from fav")
+//                Toast.makeText(requireContext(), "Removed from favorites", Toast.LENGTH_SHORT).show()
+//
+//            }
+//            .addOnFailureListener { e->
+//                Log.d(TAG, "removeFromFavorites: Failed to remove from fav due to ${e.message}")
+//                Toast.makeText(requireContext(), "failed to remove from fav due to ${e.message}", Toast.LENGTH_SHORT).show()
+//            }
+//    }
 
 
     override fun onDestroyView() {
