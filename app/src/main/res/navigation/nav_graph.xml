@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_homeFragment_to_upcomingDialogFragment"
             app:destination="@id/upcomingDialogFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
     </fragment>
     <fragment
         android:id="@+id/dialogFragment"

@@ -3,8 +3,11 @@ package com.example.midtermmovieapp.adapters
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.midtermmovieapp.Models.HomeModel
 import com.example.midtermmovieapp.Models.TopRatedMoviesModel
 import com.example.midtermmovieapp.R
 import com.example.midtermmovieapp.Resource
@@ -12,20 +15,33 @@ import com.example.midtermmovieapp.databinding.SingleMovieItemBinding
 
 class MovieTopRatedAdapter(
     private val context: Context,
-    var onClickListener: ((TopRatedMoviesModel.Result?) -> Unit)? = null
-) : RecyclerView.Adapter<MovieTopRatedAdapter.ItemViewHolder>() {
+    var onClickListener: ((TopRatedMoviesModel.Result?) -> Unit)? = null,
+    var onFavClickListener: ((TopRatedMoviesModel.Result?) -> Unit)? = null
+) : PagingDataAdapter<TopRatedMoviesModel.Result, MovieTopRatedAdapter.ItemViewHolder>(
+    diffUtilCallback()
+) {
 
-    var items2: Resource.Success<MutableList<TopRatedMoviesModel.Result?>> = Resource.Success(mutableListOf())
-
-    fun submitList(
-        newList:
-        Resource.Success<MutableList<TopRatedMoviesModel.Result?>>
-    ) {
-        items2 = newList
-    }
 
     inner class ItemViewHolder(val binding: SingleMovieItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        var model: TopRatedMoviesModel.Result? = null
+        fun onBind() {
+            model = getItem(bindingAdapterPosition)
+            binding.apply {
+                tvMovieName.text = model?.title
+                tvMovieRating.text = model?.voteAverage.toString()
+                Glide.with(context)
+                    .load("https://image.tmdb.org/t/p/w500" + model?.posterPath)
+                    .error(R.drawable.ic_launcher_background)
+                    .into(ibMovieImage)
+                ibMovieImage.setOnClickListener {
+                    onClickListener?.invoke(model!!)
+                }
+                ivFavLogo.setOnClickListener {
+                    onFavClickListener?.invoke(model!!)
+                }
+            }
+        }
     }
 
 
@@ -36,23 +52,27 @@ class MovieTopRatedAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.binding.tvMovieName.text = items2.data[position]?.title
-        holder.binding.tvMovieName.text = items2.data[position]?.title
-        holder.binding.tvMovieRating.text = items2.data[position]?.voteAverage.toString()
-
-        Glide.with(context)
-            .load("https://image.tmdb.org/t/p/w500" + items2.data[position]?.posterPath)
-            .error(R.drawable.ic_launcher_background)
-            .into(holder.binding.ibMovieImage)
-
-        holder.binding.ibMovieImage.setOnClickListener {
-            onClickListener?.invoke(items2.data[position])
-        }
+        holder.onBind()
 
 
     }
 
-    override fun getItemCount() = items2.data.size
+    class diffUtilCallback() : DiffUtil.ItemCallback<TopRatedMoviesModel.Result>() {
+        override fun areItemsTheSame(
+            oldItem: TopRatedMoviesModel.Result,
+            newItem: TopRatedMoviesModel.Result
+        ): Boolean {
+            return oldItem.id == newItem.id
+        }
 
+        override fun areContentsTheSame(
+            oldItem: TopRatedMoviesModel.Result,
+            newItem: TopRatedMoviesModel.Result
+        ): Boolean {
+            return oldItem == newItem
+        }
+
+
+    }
 
 }

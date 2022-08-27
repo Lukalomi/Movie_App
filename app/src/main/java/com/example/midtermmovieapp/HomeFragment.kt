@@ -1,5 +1,6 @@
 package com.example.midtermmovieapp
 
+import android.content.Loader
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,21 +9,21 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SearchView
-import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.paging.map
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.midtermmovieapp.Models.HomeModel
-import com.example.midtermmovieapp.Models.TopRatedMoviesModel
-import com.example.midtermmovieapp.Models.UpcomingMoviesModel
+import com.example.midtermmovieapp.adapters.LoaderAdapter
 import com.example.midtermmovieapp.adapters.MovieHomeAdapter
 import com.example.midtermmovieapp.adapters.MovieTopRatedAdapter
 import com.example.midtermmovieapp.adapters.UpcomingMoviesAdapter
 import com.example.midtermmovieapp.databinding.FragmentHomeBinding
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -33,6 +34,7 @@ class HomeFragment : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var adapterTop: MovieTopRatedAdapter
     private lateinit var adapterUpcoming: UpcomingMoviesAdapter
+    private val db = Firebase.firestore.collection("Movies")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,13 +48,17 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+
         binding!!.appCompatImageButton.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
         }
 
 
-
-        val customList = listOf("Most Popular", "Top Rated", "Upcoming Movies")
+        val customList = listOf(
+            getString(R.string.most_popular), getString(R.string.top_rated), getString(
+                R.string.upcoming
+            )
+        )
         val spinnerAdapter = ArrayAdapter(
             requireContext(),
             androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
@@ -66,27 +72,25 @@ class HomeFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                getPopularMovies()
                 if (position == 0) {
-                    getPopularMovies()
-                    searchPopular()
+//                    searchPopularPager()
+                    getPopularMoviesPager()
                     binding!!.tvMovieListType.text = "Popular Movies"
                 }
-                if(position == 1) {
-                    getTopRatedMovies()
+                if (position == 1) {
+                    getTopMoviesPager()
                     binding!!.tvMovieListType.text = "Top Rated Movies"
-                    searchTop()
+                }
 
-                }
-                if(position == 2) {
-                    getUpcomingMovies()
+                if (position == 2) {
+                    getUpcomingMoviesPager()
                     binding!!.tvMovieListType.text = "Upcoming Movies"
-                    searchUpcoming()
                 }
+
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-
+                getPopularMoviesPager()
             }
 
         }
@@ -94,362 +98,250 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun searchPopular() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.contentState.collect { response ->
-                when (response) {
-                    is Resource.Success -> {
-                        var displayList = mutableListOf<HomeModel.Result>()
-
-                        binding!!.searchAction.setOnQueryTextListener(object :
-                            SearchView.OnQueryTextListener {
-                            override fun onQueryTextSubmit(query: String?): Boolean {
-                                return true
-                            }
-
-                            override fun onQueryTextChange(newText: String?): Boolean {
-                                if (newText!!.isNotEmpty()) {
-                                    displayList.clear()
-                                    val search = newText.lowercase(Locale.getDefault())
-                                    response.data.forEach {
-                                        if (it.title.lowercase(Locale.getDefault())
-                                                .contains(search)
-                                        ) {
-                                            displayList.add(it)
-                                        }
-
-                                    }
-                                    if (displayList.size == 0) {
-                                        binding!!.tvNoMovie.visibility = View.VISIBLE
-                                        binding!!.tvNoMovie.setText("Movie $newText is not available")
-                                    } else {
-                                        binding!!.tvNoMovie.visibility = View.GONE
-
-                                    }
-
-                                    adapter = MovieHomeAdapter(requireContext())
-                                    adapter.submitList(Resource.Success(displayList))
-                                    binding!!.rvHomeRecycler.layoutManager =
-                                        GridLayoutManager(activity, 2)
-                                    binding!!.rvHomeRecycler.adapter = adapter
-                                    adapter.onClickListener = {
-                                        findNavController().navigate(
-                                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-                                                it,
-                                            )
-                                        )
-                                    }
-
-                                } else {
-                                    adapter = MovieHomeAdapter(requireContext())
-                                    binding!!.rvHomeRecycler.layoutManager =
-                                        GridLayoutManager(activity, 2)
-                                    binding!!.rvHomeRecycler.adapter = adapter
-                                    adapter.onClickListener = { item ->
-                                        findNavController().navigate(
-                                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-                                                item,
-                                            )
-                                        )
-                                    }
-
-                                    binding!!.tvNoMovie.visibility = View.GONE
-                                    adapter.submitList(Resource.Success(response.data))
-
-
-                                }
-
-                                return true
-                            }
-
-                        })
-                    }
-                    is Resource.Error -> {
-                        Toast.makeText(requireContext(), response.errorMsg, Toast.LENGTH_SHORT)
-                            .show()
-
-                    }
-                    is Resource.Loader -> {
-                        if (response.isLoading != binding!!.pbHome.isVisible) {
-                            binding!!.pbHome.visibility = View.GONE
-                            binding!!.tvHomeLoader.visibility = View.GONE
-
-                        }
-                    }
-                }
-            }
-        }
-        }
-
-    }
-
-    private fun searchTop() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.contentTopRated.collect { response ->
-                    when (response) {
-                        is Resource.Success -> {
-                            var displayList = mutableListOf<TopRatedMoviesModel.Result?>()
-
-                            binding!!.searchAction.setOnQueryTextListener(object :
-                                SearchView.OnQueryTextListener {
-                                override fun onQueryTextSubmit(query: String?): Boolean {
-                                    return true
-                                }
-
-                                override fun onQueryTextChange(newText: String?): Boolean {
-                                    if (newText!!.isNotEmpty()) {
-                                        displayList.clear()
-                                        val search = newText.lowercase(Locale.getDefault())
-                                        response.data.forEach {
-                                            if (it?.title?.lowercase(Locale.getDefault())
-                                                    ?.contains(search) == true
-                                            ) {
-                                                displayList.add(it)
-                                            }
-
-                                        }
-                                        if (displayList.size == 0) {
-                                            binding!!.tvNoMovie.visibility = View.VISIBLE
-                                            binding!!.tvNoMovie.setText("Movie $newText is not available")
-                                        } else {
-                                            binding!!.tvNoMovie.visibility = View.GONE
-
-                                        }
-
-                                        adapterTop = MovieTopRatedAdapter(requireContext())
-                                        adapterTop.submitList(Resource.Success(displayList))
-                                        binding!!.rvHomeRecycler.layoutManager =
-                                            GridLayoutManager(activity, 2)
-                                        binding!!.rvHomeRecycler.adapter = adapterTop
-                                        adapterTop.onClickListener = { item ->
-                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToTopRatedDialogFragment(item))
-                                        }
-
-                                    } else {
-                                        adapterTop = MovieTopRatedAdapter(requireContext())
-                                        binding!!.rvHomeRecycler.layoutManager =
-                                            GridLayoutManager(activity, 2)
-                                        binding!!.rvHomeRecycler.adapter = adapterTop
-                                        adapterTop.onClickListener = { item ->
-                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToTopRatedDialogFragment(item))
-                                        }
-
-                                        binding!!.tvNoMovie.visibility = View.GONE
-                                        adapterTop.submitList(Resource.Success(response.data))
-
-                                    }
-
-                                    return true
-                                }
-
-                            })
-                        }
-                        is Resource.Error -> {
-                            Toast.makeText(requireContext(), response.errorMsg, Toast.LENGTH_SHORT)
-                                .show()
-
-                        }
-                        is Resource.Loader -> {
-                            if (response.isLoading != binding!!.pbHome.isVisible) {
-                                binding!!.pbHome.visibility = View.GONE
-                                binding!!.tvHomeLoader.visibility = View.GONE
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-    private fun searchUpcoming() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.contentUpcoming.collect { response ->
-                    when (response) {
-                        is Resource.Success -> {
-                            var displayList = mutableListOf<UpcomingMoviesModel.Result?>()
-
-                            binding!!.searchAction.setOnQueryTextListener(object :
-                                SearchView.OnQueryTextListener {
-                                override fun onQueryTextSubmit(query: String?): Boolean {
-                                    return true
-                                }
-
-                                override fun onQueryTextChange(newText: String?): Boolean {
-                                    if (newText!!.isNotEmpty()) {
-                                        displayList.clear()
-                                        val search = newText.lowercase(Locale.getDefault())
-                                        response.data.forEach {
-                                            if (it?.title?.lowercase(Locale.getDefault())
-                                                    ?.contains(search) == true
-                                            ) {
-                                                displayList.add(it)
-                                            }
-
-                                        }
-                                        if (displayList.size == 0) {
-                                            binding!!.tvNoMovie.visibility = View.VISIBLE
-                                            binding!!.tvNoMovie.setText("Movie $newText is not available")
-                                        } else {
-                                            binding!!.tvNoMovie.visibility = View.GONE
-
-                                        }
-
-                                        adapterUpcoming = UpcomingMoviesAdapter(requireContext())
-                                        adapterUpcoming.submitList(Resource.Success(displayList))
-                                        binding!!.rvHomeRecycler.layoutManager =
-                                            GridLayoutManager(activity, 2)
-                                        binding!!.rvHomeRecycler.adapter = adapterUpcoming
+//    private fun searchPopularPager() {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                viewModel.moviePager.collect { response ->
+//                    var displayList: MutableList<HomeModel.Result> = mutableListOf()
 //
-                                        adapterUpcoming.onClickListener = {
-                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUpcomingDialogFragment(it))
-                                        }
+//
+//                    binding!!.searchAction.setOnQueryTextListener(object :
+//                        SearchView.OnQueryTextListener {
+//                        override fun onQueryTextSubmit(query: String?): Boolean {
+//                            return true
+//                        }
+//
+//                        override fun onQueryTextChange(newText: String?): Boolean {
+//                            if (newText!!.isNotEmpty()) {
+//                                displayList.clear()
+//                                val search = newText.lowercase(Locale.getDefault())
+//                                response.map {
+//                                    if (it.title.lowercase(Locale.getDefault())
+//                                            .contains(search)
+//                                    ) {
+//                                        displayList.add(it)
+//                                    }
+//
+//                                }
+//
+//
+//                                if (displayList.size == 0) {
+//                                    binding!!.tvNoMovie.visibility = View.VISIBLE
+//                                    binding!!.tvNoMovie.setText("Movie $newText is not available")
+//                                } else {
+//                                    binding!!.tvNoMovie.visibility = View.GONE
+//
+//                                }
+//
+//                                adapter = MovieHomeAdapter(requireContext())
+//                                viewLifecycleOwner.lifecycleScope.launch {
+//                                    adapter.submitData(response)
+//                                    binding!!.rvHomeRecycler.layoutManager =
+//                                        GridLayoutManager(activity, 2)
+//                                    binding!!.rvHomeRecycler.adapter = adapter
+//                                    adapter.onClickListener = {
+//                                        findNavController().navigate(
+//                                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
+//                                                it,
+//                                            )
+//                                        )
+//
+//                                    }
+//                                }
+//
+//
+//                            } else {
+//                                viewLifecycleOwner.lifecycleScope.launch {
+//                                    adapter = MovieHomeAdapter(requireContext())
+//                                    binding!!.rvHomeRecycler.layoutManager =
+//                                        GridLayoutManager(activity, 2)
+//                                    binding!!.rvHomeRecycler.adapter = adapter
+//                                    adapter.onClickListener = { item ->
+//                                        findNavController().navigate(
+//                                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
+//                                                item,
+//                                            )
+//                                        )
+//                                    }
+//
+//                                    binding!!.tvNoMovie.visibility = View.GONE
+//                                    adapter.submitData(response)
+//                                }
+//
+//
+//                            }
+//
+//                            return true
+//                        }
+//
+//                    })
+//                }
+//            }
+//        }
+//    }
+
+//    private fun searchPopular() {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                viewModel.contentState.collect { response ->
+//                    when (response) {
+//                        is Resource.Success -> {
+//                            var displayList = mutableListOf<HomeModel.Result>()
+//
+//                            binding!!.searchAction.setOnQueryTextListener(object :
+//                                SearchView.OnQueryTextListener {
+//                                override fun onQueryTextSubmit(query: String?): Boolean {
+//                                    return true
+//                                }
+//
+//                                override fun onQueryTextChange(newText: String?): Boolean {
+//                                    if (newText!!.isNotEmpty()) {
+//                                        displayList.clear()
+//                                        val search = newText.lowercase(Locale.getDefault())
+//                                        response.data.forEach {
+//                                            if (it.title.lowercase(Locale.getDefault())
+//                                                    .contains(search)
+//                                            ) {
+//                                                displayList.add(it)
+//                                            }
+//
+//                                        }
+//                                        if (displayList.size == 0) {
+//                                            binding!!.tvNoMovie.visibility = View.VISIBLE
+//                                            binding!!.tvNoMovie.setText("Movie $newText is not available")
+//                                        } else {
+//                                            binding!!.tvNoMovie.visibility = View.GONE
+//
+//                                        }
+//
+//                                        adapter = MovieHomeAdapter(requireContext())
+//                                        adapter.submitList(Resource.Success(displayList))
+//                                        binding!!.rvHomeRecycler.layoutManager =
+//                                            GridLayoutManager(activity, 2)
+//                                        binding!!.rvHomeRecycler.adapter = adapter
+//                                        adapter.onClickListener = {
+//                                            findNavController().navigate(
+//                                                HomeFragmentDirections.actionHomeFragmentToDialogFragment(
+//                                                    it,
+//                                                )
+//                                            )
+//
+//                                        }
+//
+//                                    } else {
+//                                        adapter = MovieHomeAdapter(requireContext())
+//                                        binding!!.rvHomeRecycler.layoutManager =
+//                                            GridLayoutManager(activity, 2)
+//                                        binding!!.rvHomeRecycler.adapter = adapter
+//                                        adapter.onClickListener = { item ->
+//                                            findNavController().navigate(
+//                                                HomeFragmentDirections.actionHomeFragmentToDialogFragment(
+//                                                    item,
+//                                                )
+//                                            )
+//                                        }
+//
+//                                        binding!!.tvNoMovie.visibility = View.GONE
+//                                        adapter.submitList(Resource.Success(response.data))
+//
+//
+//                                    }
+//
+//                                    return true
+//                                }
+//
+//                            })
+//                        }
+//                        is Resource.Error -> {
+//                            Toast.makeText(requireContext(), response.errorMsg, Toast.LENGTH_SHORT)
+//                                .show()
+//
+//                        }
+//                        is Resource.Loader -> {
+//                            if (response.isLoading != binding!!.pbHome.isVisible) {
+//                                binding!!.pbHome.visibility = View.GONE
+//                                binding!!.tvHomeLoader.visibility = View.GONE
+//
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//    }
 
 
-                                    } else {
-                                        adapterUpcoming = UpcomingMoviesAdapter(requireContext())
-                                        binding!!.rvHomeRecycler.layoutManager =
-                                            GridLayoutManager(activity, 2)
-                                        binding!!.rvHomeRecycler.adapter = adapterUpcoming
-                                        adapterUpcoming.onClickListener = { item ->
-                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUpcomingDialogFragment(item))
-                                        }
+    private fun getPopularMoviesPager() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                binding!!.pbHome.visibility = View.GONE
+                binding!!.tvHomeLoader.visibility = View.GONE
+                viewModel.moviePager.collect {
+                    adapter = MovieHomeAdapter(requireContext())
+                    binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
+                    binding!!.rvHomeRecycler.adapter = adapter
+                    adapter.withLoadStateFooter(footer = LoaderAdapter())
+                    adapter.submitData(it)
 
-                                        binding!!.tvNoMovie.visibility = View.GONE
-                                        adapterUpcoming.submitList(Resource.Success(response.data))
+                    adapter.onClickListener = { item ->
+                        findNavController().navigate(
+                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
+                                item,
+                            )
+                        )
 
-                                    }
-
-                                    return true
-                                }
-
-                            })
-                        }
-                        is Resource.Error -> {
-                            Toast.makeText(requireContext(), response.errorMsg, Toast.LENGTH_SHORT)
-                                .show()
-
-                        }
-                        is Resource.Loader -> {
-                            if (response.isLoading != binding!!.pbHome.isVisible) {
-                                binding!!.pbHome.visibility = View.GONE
-                                binding!!.tvHomeLoader.visibility = View.GONE
-
-                            }
-                        }
                     }
                 }
             }
         }
     }
 
-
-    private fun getPopularMovies() {
+    private fun getTopMoviesPager() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.getMovieContent()
-                viewModel.contentState.collect {
-                    when (it) {
-                        is Resource.Success -> {
-                            adapter = MovieHomeAdapter(requireContext())
-                            adapter.submitList(it)
-                            binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
-                            binding!!.rvHomeRecycler.adapter = adapter
-                            adapter.onClickListener = { item ->
-                                findNavController().navigate(
-                                    HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-                                        item,
-                                    )
-                                )
+                binding!!.pbHome.visibility = View.GONE
+                binding!!.tvHomeLoader.visibility = View.GONE
+                viewModel.movieTopPager.collect {
+                    adapterTop = MovieTopRatedAdapter(requireContext())
+                    binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
+                    binding!!.rvHomeRecycler.adapter = adapterTop
+                    adapterTop.withLoadStateFooter(footer = LoaderAdapter())
+                    adapterTop.submitData(it)
 
-                            }
-
-                        }
-                        is Resource.Error -> {
-                            Toast.makeText(requireContext(), it.errorMsg, Toast.LENGTH_SHORT).show()
-
-                        }
-                        is Resource.Loader -> {
-                            if (it.isLoading != binding!!.pbHome.isVisible) {
-                                binding!!.pbHome.visibility = View.GONE
-                                binding!!.tvHomeLoader.visibility = View.GONE
-
-                            }
-                        }
-                    }
-
+//                    adapterTop.onClickListener = { item ->
+//                        findNavController().navigate(
+//                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
+//                                item,
+//                            )
+//                        )
+//
+//                    }
                 }
             }
         }
     }
 
-    private fun getUpcomingMovies() {
+    private fun getUpcomingMoviesPager() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.getUpComingMovieContent()
-                viewModel.contentUpcoming.collect {
-                    when (it) {
-                        is Resource.Success -> {
-                            adapterUpcoming = UpcomingMoviesAdapter(requireContext())
-                            adapterUpcoming.submitList(it)
-                            binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
-                            binding!!.rvHomeRecycler.adapter = adapterUpcoming
-                           adapterUpcoming.onClickListener = { item ->
-                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUpcomingDialogFragment(item))
-                                        }
+                binding!!.pbHome.visibility = View.GONE
+                binding!!.tvHomeLoader.visibility = View.GONE
+                viewModel.movieUpcomingPager.collect {
+                    adapterUpcoming = UpcomingMoviesAdapter(requireContext())
+                    binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
+                    binding!!.rvHomeRecycler.adapter = adapterUpcoming
+                    adapterUpcoming.withLoadStateFooter(footer = LoaderAdapter())
+                    adapterUpcoming.submitData(it)
 
-                        }
-                        is Resource.Error -> {
-                            Toast.makeText(requireContext(), it.errorMsg, Toast.LENGTH_SHORT).show()
-
-                        }
-                        is Resource.Loader -> {
-                            if (it.isLoading != binding!!.pbHome.isVisible) {
-                                binding!!.pbHome.visibility = View.GONE
-                                binding!!.tvHomeLoader.visibility = View.GONE
-
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-    }
-
-    private fun getTopRatedMovies() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.getTopMovieContent()
-                viewModel.contentTopRated.collect {
-                    when (it) {
-                        is Resource.Success -> {
-                            adapterTop = MovieTopRatedAdapter(requireContext())
-                            adapterTop.submitList(it)
-                            binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
-                            binding!!.rvHomeRecycler.adapter = adapterTop
-                           adapterTop.onClickListener = { item ->
-                                            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToTopRatedDialogFragment(item))
-                                        }
-
-                        }
-                        is Resource.Error -> {
-                            Toast.makeText(requireContext(), it.errorMsg, Toast.LENGTH_SHORT).show()
-
-                        }
-                        is Resource.Loader -> {
-                            if (it.isLoading != binding!!.pbHome.isVisible) {
-                                binding!!.pbHome.visibility = View.GONE
-                                binding!!.tvHomeLoader.visibility = View.GONE
-
-                            }
-                        }
-                    }
-
+//                    adapterTop.onClickListener = { item ->
+//                        findNavController().navigate(
+//                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
+//                                item,
+//                            )
+//                        )
+//
+//                    }
                 }
             }
         }

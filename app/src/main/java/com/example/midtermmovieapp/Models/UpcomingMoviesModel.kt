@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class UpcomingMoviesModel(
     val dates: Dates?,
     val page: Int?,
-    val results: MutableList<Result?>,
+    val results: MutableList<Result>?,
     @SerializedName("total_pages")
     val totalPages: Int?,
     @SerializedName("total_results")
