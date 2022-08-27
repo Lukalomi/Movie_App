@@ -42,10 +42,11 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/appCompatImageView2"
-        android:layout_width="120dp"
+        android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/ic_standing_5"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/ic_register_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvLogin" />
@@ -54,7 +55,7 @@
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="64dp"
         android:drawablePadding="40dp"
         android:paddingStart="10dp"
         android:layout_marginStart="40dp"
