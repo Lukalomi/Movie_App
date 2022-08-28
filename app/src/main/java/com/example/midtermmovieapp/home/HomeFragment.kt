@@ -11,7 +11,9 @@ import android.view.animation.LayoutAnimationController
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +25,7 @@ import com.example.midtermmovieapp.R
 import com.example.midtermmovieapp.utils.Resource
 import com.example.midtermmovieapp.adapters.*
 import com.example.midtermmovieapp.databinding.FragmentHomeBinding
+import com.example.midtermmovieapp.utils.ResUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
@@ -54,14 +57,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
-        binding!!.btnFavorite.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
-        }
-        binding!!.btnFavorite.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
-        }
 
         binding!!.appCompatImageButton.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
@@ -187,7 +182,7 @@ class HomeFragment : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            Log.d("Error", it.errorMsg)
+                            Log.d(getString(R.string.error), it.errorMsg)
                         }
 
 
@@ -205,9 +200,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-//        searchAdapter.onClickListener = { item->
-//            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToDialogFragment(item))
-//        }
     }
 
     private fun getPopularMoviesPager() {
@@ -241,8 +233,10 @@ class HomeFragment : Fragment() {
                     item
                 )
             )
+
         }
     }
+
 
     private fun getTopMoviesPager() {
         viewLifecycleOwner.lifecycleScope.launch {

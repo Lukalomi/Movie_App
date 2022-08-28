@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="10dp"
-        android:text="Movie List Type"
+        android:text="@string/movie_list_type"
         android:gravity="center"
         android:textColor="#A86B6B"
         android:textSize="18sp"
@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="No Movie Found"
+        android:text="@string/no_movie_found"
         android:textColor="#222020"
         android:textSize="22sp"
         android:visibility="invisible"
@@ -62,7 +62,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:fontFamily="sans-serif-condensed"
-        android:text="Movie App"
+        android:text="@string/movie_app"
         android:textColor="#CA6A6A"
         android:textSize="22sp"
         android:textStyle="bold"
@@ -124,7 +124,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="37dp"
         android:layout_marginBottom="264dp"
-        android:text="Loading..."
+        android:text="@string/loading"
         android:textColor="@color/teal_200"
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -133,18 +133,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pbHome" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnFavorite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="20dp"
-        android:text="Favorite"
-        app:layout_constraintBottom_toTopOf="@+id/rvHomeRecycler"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.885"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_action" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
