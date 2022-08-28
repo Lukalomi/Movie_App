@@ -15,3 +15,6 @@ Several tools have been used to make this app such as:
 8.Firebase Authenticaton
 9.Recyclerview
 10.Fragments
+
+
+https://user-images.githubusercontent.com/63911224/187086219-5603e342-90d2-43d4-97d3-77737ceb9d11.mp4
