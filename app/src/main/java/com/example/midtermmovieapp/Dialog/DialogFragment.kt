@@ -38,9 +38,9 @@ class DialogFragment : Fragment() {
 
 
         binding?.let {
-            it.tvDialogMovieDesc.text = args.singleDialog.overview
-            it.tvDialogMovieName.text = args.singleDialog.title
-            Glide.with(requireContext()).load("https://image.tmdb.org/t/p/w500"+args.singleDialog.posterPath).into(it.ivDialogMovie)
+            it.tvDialogMovieDesc.text = args.singleDialog?.overview
+            it.tvDialogMovieName.text = args.singleDialog?.title
+            Glide.with(requireContext()).load("https://image.tmdb.org/t/p/w500"+args.singleDialog?.posterPath).into(it.ivDialogMovie)
         }
 
 

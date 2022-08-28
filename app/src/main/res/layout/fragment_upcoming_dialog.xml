@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:background="@drawable/gradient_dialog_background"
-    tools:context=".UpcomingDialogFragment">
+    tools:context=".Dialog.UpcomingDialogFragment">
     <androidx.cardview.widget.CardView
         android:layout_width="300dp"
         android:layout_height="550dp"

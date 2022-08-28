@@ -1,4 +1,4 @@
-package com.example.midtermmovieapp
+package com.example.midtermmovieapp.Dialog
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -8,19 +8,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
-import com.example.midtermmovieapp.databinding.FragmentUpcomingDialogBinding
+import com.example.midtermmovieapp.databinding.FragmentTopRatedDialogBinding
 
-class UpcomingDialogFragment : Fragment() {
+class TopRatedDialogFragment : Fragment() {
 
+   private var binding: FragmentTopRatedDialogBinding? = null
+    private val args: TopRatedDialogFragmentArgs by navArgs()
 
-private var binding: FragmentUpcomingDialogBinding? = null
-
-    private val args:UpcomingDialogFragmentArgs by navArgs()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentUpcomingDialogBinding.inflate(inflater,container,false)
+        binding = FragmentTopRatedDialogBinding.inflate(inflater,container,false)
         return binding!!.root
     }
 
@@ -28,17 +27,16 @@ private var binding: FragmentUpcomingDialogBinding? = null
         super.onViewCreated(view, savedInstanceState)
 
         binding?.let {
-            it.tvDialogMovieDesc.text = args.upComing?.overview
-            it.tvDialogMovieName.text = args.upComing?.title
-            Glide.with(requireContext()).load("https://image.tmdb.org/t/p/w500"+args.upComing?.posterPath).into(it.ivDialogMovie)
+            it.tvDialogMovieName.text = args.topRatedDialog?.title
+            it.tvDialogMovieDesc.text = args.topRatedDialog?.overview
+            Glide.with(requireContext()).load("https://image.tmdb.org/t/p/w500" + args.topRatedDialog?.posterPath).into(it.ivDialogMovie)
         }
-
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding=null
+        binding = null
     }
-
 
 }

@@ -10,10 +10,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.midtermmovieapp.Models.HomeModel
-import com.example.midtermmovieapp.Models.TopRatedMoviesModel
 import com.example.midtermmovieapp.R
-import com.example.midtermmovieapp.Resource
 import com.example.midtermmovieapp.databinding.SingleMovieItemBinding
 
 class UpcomingMoviesAdapter(

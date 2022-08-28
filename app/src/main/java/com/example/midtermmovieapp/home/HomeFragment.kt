@@ -1,33 +1,29 @@
-package com.example.midtermmovieapp
+package com.example.midtermmovieapp.home
 
-import android.content.ContentValues.TAG
-import android.content.Loader
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.view.animation.LayoutAnimationController
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.paging.map
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.midtermmovieapp.Models.HomeModel
+import com.example.midtermmovieapp.R
+import com.example.midtermmovieapp.utils.Resource
 import com.example.midtermmovieapp.adapters.*
 import com.example.midtermmovieapp.databinding.FragmentHomeBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -167,11 +163,12 @@ class HomeFragment : Fragment() {
                                         binding!!.rvHomeRecycler.layoutManager =
                                             GridLayoutManager(activity, 2)
                                         binding!!.rvHomeRecycler.adapter = searchAdapter
+
                                         if (displayList.size > 0) {
                                             binding!!.pbHome.visibility = View.GONE
 
                                         }
-                                        if(displayList.size < 0) {
+                                        if (displayList.size < 0) {
                                             binding!!.pbHome.visibility = View.GONE
 
                                         }
@@ -207,6 +204,10 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+
+//        searchAdapter.onClickListener = { item->
+//            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToDialogFragment(item))
+//        }
     }
 
     private fun getPopularMoviesPager() {
@@ -214,68 +215,103 @@ class HomeFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.moviePager.collect {
                     binding!!.pbHome.visibility = View.GONE
+                    var anim = LayoutAnimationController(
+                        AnimationUtils.loadAnimation(
+                            requireContext(),
+                            R.anim.recycler_anim
+                        )
+                    )
+                    anim.delay = 0.20f
+                    anim.order = LayoutAnimationController.ORDER_NORMAL
                     binding!!.tvHomeLoader.visibility = View.GONE
                     adapter = MovieHomeAdapter(requireContext())
                     binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
+                    binding!!.rvHomeRecycler.layoutAnimation = anim
                     binding!!.rvHomeRecycler.adapter = adapter
                     adapter.withLoadStateFooter(footer = LoaderAdapter())
                     adapter.submitData(it)
 
-                    adapter.onClickListener = { item ->
-                        findNavController().navigate(
-                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-                                item,
-                            )
-                        )
 
-                    }
                 }
             }
+        }
+        adapter.onClickListener = { item ->
+            findNavController().navigate(
+                HomeFragmentDirections.actionHomeFragmentToDialogFragment(
+                    item
+                )
+            )
         }
     }
 
     private fun getTopMoviesPager() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-
                 viewModel.movieTopPager.collect {
                     adapterTop = MovieTopRatedAdapter(requireContext())
+                    var anim = LayoutAnimationController(
+                        AnimationUtils.loadAnimation(
+                            requireContext(),
+                            R.anim.recycler_anim
+                        )
+                    )
+                    binding!!.tvHomeLoader.visibility = View.GONE
+                    binding!!.pbHome.visibility = View.GONE
+                    anim.delay = 0.20f
+                    anim.order = LayoutAnimationController.ORDER_NORMAL
                     binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
                     binding!!.rvHomeRecycler.adapter = adapterTop
+                    binding!!.rvHomeRecycler.layoutAnimation = anim
                     adapterTop.withLoadStateFooter(footer = LoaderAdapter())
                     adapterTop.submitData(it)
-//                    adapterTop.onClickListener = { item ->
-//                        findNavController().navigate(
-//                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-//                                item,
-//                            )
-//                        )
-//
-//                    }
+
+
                 }
             }
+
+        }
+        adapterTop.onClickListener = {
+            findNavController().navigate(
+                HomeFragmentDirections.actionHomeFragmentToTopRatedDialogFragment(
+                    it
+                )
+            )
         }
     }
+
 
     private fun getUpcomingMoviesPager() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.movieUpcomingPager.collect {
+                    var anim = LayoutAnimationController(
+                        AnimationUtils.loadAnimation(
+                            requireContext(),
+                            R.anim.recycler_anim
+                        )
+                    )
+                    anim.delay = 0.20f
+                    anim.order = LayoutAnimationController.ORDER_NORMAL
+                    binding!!.tvHomeLoader.visibility = View.GONE
+                    binding!!.pbHome.visibility = View.GONE
                     adapterUpcoming = UpcomingMoviesAdapter(requireContext())
                     binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
                     binding!!.rvHomeRecycler.adapter = adapterUpcoming
+                    binding!!.rvHomeRecycler.layoutAnimation = anim
                     adapterUpcoming.withLoadStateFooter(footer = LoaderAdapter())
                     adapterUpcoming.submitData(it)
-//                    adapterTop.onClickListener = { item ->
-//                        findNavController().navigate(
-//                            HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-//                                item,
-//                            )
-//                        )
-//
-//                    }
+
                 }
+
             }
+        }
+        adapterUpcoming.onClickListener = { item ->
+            findNavController().navigate(
+                HomeFragmentDirections.actionHomeFragmentToUpcomingDialogFragment(
+                    item
+                )
+
+            )
         }
     }
 //    private fun checkIsFavorite(){

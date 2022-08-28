@@ -1,18 +1,18 @@
 package com.example.midtermmovieapp.userProfile
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.midtermmovieapp.utils.ResUtils
 import com.example.midtermmovieapp.databinding.FragmentRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -64,6 +64,7 @@ class RegisterFragment : Fragment() {
                         if(it.isSuccessful) {
                             checkLoggedInstance()
                             binding!!.pgRegister.visibility = View.GONE
+                            sendUserInfo()
                         }
                         else {
                             Toast.makeText(requireContext(),it.exception.toString(),Toast.LENGTH_LONG).show()
@@ -99,6 +100,15 @@ class RegisterFragment : Fragment() {
             Toast.makeText(requireContext(), "you are Registered", Toast.LENGTH_SHORT).show()
             findNavController().navigate(RegisterFragmentDirections.actionRegisterFragmentToLogInFragment())
         }
+    }
+
+    private fun sendUserInfo()   {
+        setFragmentResult(
+             ResUtils.AUTH_KEY,
+            result = bundleOf(
+                ResUtils.EMAIL to binding!!.etEmail.text.toString(),
+            ResUtils.PASSWORD to binding!!.etPass.text.toString())
+        )
     }
 
     override fun onDestroyView() {
