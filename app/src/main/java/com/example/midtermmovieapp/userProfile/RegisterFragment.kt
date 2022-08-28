@@ -42,13 +42,14 @@ class RegisterFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         binding!!.btnRegister.setOnClickListener {
             registerUser()
+            checkFields()
 
         }
 
     }
 
     private fun registerUser() {
-        checkFields()
+//        checkFields()
         if (binding!!.etEmail.text.toString().isNotEmpty() && binding!!.etPass.text.toString()
                 .isNotEmpty()
         ) {
