@@ -18,6 +18,9 @@
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/drawable/fragment_dialog_background.xml" value="0.2135" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/drawable/gradient_dialog_background.xml" value="0.1625" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/drawable/ic_auth_welcome.xml" value="0.23" />
+        <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/drawable/ic_back_svg_profile.xml" value="0.1485" />
+        <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/drawable/ic_baseline_email_24.xml" value="0.1485" />
+        <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.1485" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/drawable/ic_elipse1.xml" value="0.23" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/drawable/ic_ellipse2.xml" value="0.23" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/drawable/ic_fav_logo.xml" value="0.1625" />
@@ -45,8 +48,8 @@
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_register.xml" value="0.24010416666666667" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_search.xml" value="0.25416666666666665" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_splash_screen_new.xml" value="0.11302083333333333" />
-        <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_top_rated_dialog.xml" value="0.11302083333333333" />
-        <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_upcoming_dialog.xml" value="0.16799999999999998" />
+        <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_top_rated_dialog.xml" value="0.264" />
+        <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_upcoming_dialog.xml" value="0.264" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/fragment_user_profile.xml" value="0.25416666666666665" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/loader.xml" value="0.253125" />
         <entry key="..\:/TBC-BOOTCAMP/Midterm-MovieApp/app/src/main/res/layout/single_movie_item.xml" value="0.18841698841698842" />
