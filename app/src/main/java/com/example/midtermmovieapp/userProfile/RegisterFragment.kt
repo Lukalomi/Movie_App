@@ -10,6 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.midtermmovieapp.R
 import com.example.midtermmovieapp.utils.ResUtils
 import com.example.midtermmovieapp.databinding.FragmentRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -88,16 +89,16 @@ class RegisterFragment : Fragment() {
         if (binding!!.etEmail.text.toString().isEmpty() && binding!!.etPass.text.toString()
                 .isEmpty())
         {
-            Toast.makeText(requireContext(), "Please Fill Out Every Field", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.fill_out_every_field), Toast.LENGTH_SHORT).show()
 
         }
     }
 
     private fun checkLoggedInstance() {
         if (auth.currentUser == null) {
-            Toast.makeText(requireContext(), "you Haven't Registered", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.havent_registered), Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(requireContext(), "you are Registered", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.you_are_registered), Toast.LENGTH_SHORT).show()
             findNavController().navigate(RegisterFragmentDirections.actionRegisterFragmentToLogInFragment())
         }
     }

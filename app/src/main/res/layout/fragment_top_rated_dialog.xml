@@ -37,7 +37,7 @@
                 android:layout_marginTop="20dp"
                 android:fontFamily="casual"
                 android:gravity="center"
-                android:text="Movie Name"
+                android:text="@string/movie_name"
                 android:textStyle="bold"
                 android:textColor="@color/black"
                 android:textSize="22sp"
@@ -67,7 +67,7 @@
                     android:fontFamily="monospace"
                     android:textColor="#302B2B"
                     android:justificationMode="inter_word"
-                    android:text="this is a description" />
+                    android:text="@string/this_is_a_description" />
             </ScrollView>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

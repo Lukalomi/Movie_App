@@ -22,5 +22,20 @@
     <string name="popular_movies">Popular Movies</string>
     <string name="top_rated_movies">Top Rated Movies</string>
     <string name="upcoming_movies">Upcoming Movies</string>
+    <string name="movie_name">Movie Name</string>
+    <string name="this_is_a_description">this is a description</string>
+    <string name="movie_rating">Movie Rating :</string>
+    <string name="movie_list_type">Movie List Type</string>
+    <string name="no_movie_found">No Movie Found</string>
+    <string name="movie_app">Movie App</string>
+    <string name="loading">Loading…</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="havent_registered">you Haven\'t Registered</string>
+    <string name="you_are_registered">you are Registered</string>
+    <string name="fill_out_every_field">Please Fill Out Every Field</string>
+    <string name="already_logged_in">you are already Logged in</string>
+    <string name="you_are_logged_in">you are Logged In</string>
+    <string name="user_signed_out">User Signed Out</string>
+    <string name="error">Error</string>
 
 </resources>

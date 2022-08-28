@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.midtermmovieapp.R
 import com.example.midtermmovieapp.utils.ResUtils
 import com.example.midtermmovieapp.databinding.FragmentLogInBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -85,7 +86,7 @@ class LogInFragment : Fragment() {
         if (binding!!.etEmail.text.toString().isEmpty() && binding!!.etPass.text.toString()
                 .isEmpty()
         ) {
-            Toast.makeText(requireContext(), "Please Fill Out Every Field", Toast.LENGTH_SHORT)
+            Toast.makeText(requireContext(), getString(R.string.fill_out_every_field), Toast.LENGTH_SHORT)
                 .show()
 
         }
@@ -93,9 +94,9 @@ class LogInFragment : Fragment() {
 
     private fun checkLoggedInstance() {
         if (auth.currentUser == null) {
-            Toast.makeText(requireContext(), "you Haven't Registered", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.havent_registered), Toast.LENGTH_SHORT).show()
         } else if (auth.currentUser !== null) {
-            Toast.makeText(requireContext(), "you are Logged In", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.you_are_logged_in), Toast.LENGTH_SHORT).show()
             findNavController().navigate(
                 LogInFragmentDirections.actionLogInFragmentToHomeFragment(
 
@@ -104,7 +105,7 @@ class LogInFragment : Fragment() {
 
         } else {
 
-            Toast.makeText(requireContext(), "you are already Logged in", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.already_logged_in), Toast.LENGTH_SHORT).show()
         }
     }
 
