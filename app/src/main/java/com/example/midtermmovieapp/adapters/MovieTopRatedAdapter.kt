@@ -7,10 +7,8 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.midtermmovieapp.Models.HomeModel
 import com.example.midtermmovieapp.Models.TopRatedMoviesModel
 import com.example.midtermmovieapp.R
-import com.example.midtermmovieapp.Resource
 import com.example.midtermmovieapp.databinding.SingleMovieItemBinding
 
 class MovieTopRatedAdapter(
@@ -35,10 +33,10 @@ class MovieTopRatedAdapter(
                     .error(R.drawable.ic_launcher_background)
                     .into(ibMovieImage)
                 ibMovieImage.setOnClickListener {
-                    onClickListener?.invoke(model!!)
+                    onClickListener?.invoke(model)
                 }
                 ivFavLogo.setOnClickListener {
-                    onFavClickListener?.invoke(model!!)
+                    onFavClickListener?.invoke(model)
                 }
             }
         }

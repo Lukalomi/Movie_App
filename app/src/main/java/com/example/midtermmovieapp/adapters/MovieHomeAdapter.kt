@@ -1,7 +1,7 @@
 package com.example.midtermmovieapp.adapters
 
+
 import android.content.Context
-import android.graphics.Movie
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.midtermmovieapp.Models.HomeModel
 import com.example.midtermmovieapp.R
-import com.example.midtermmovieapp.Resource
 import com.example.midtermmovieapp.databinding.SingleMovieItemBinding
 
 
@@ -35,7 +34,11 @@ class MovieHomeAdapter(
                     .error(R.drawable.ic_launcher_background)
                     .into(ibMovieImage)
                 ibMovieImage.setOnClickListener {
-                    onClickListener?.invoke(model!!)
+                    getItem(position = bindingAdapterPosition)?.let { it1 ->
+                        onClickListener?.invoke(
+                            it1
+                        )
+                    }
                 }
                 ivFavLogo.setOnClickListener {
                     onFavClickListener?.invoke(model!!)
@@ -45,6 +48,8 @@ class MovieHomeAdapter(
 
 
     }
+
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {

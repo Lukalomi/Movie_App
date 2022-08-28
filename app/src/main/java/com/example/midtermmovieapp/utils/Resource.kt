@@ -1,4 +1,4 @@
-package com.example.midtermmovieapp
+package com.example.midtermmovieapp.utils
 
 sealed class Resource<T:Any> {
     data class Success<T:Any>(val data: T): Resource<T>()

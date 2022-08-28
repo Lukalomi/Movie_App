@@ -7,10 +7,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.midtermmovieapp.Models.HomeModel
 import com.example.midtermmovieapp.R
-import com.example.midtermmovieapp.Resource
+import com.example.midtermmovieapp.utils.Resource
 import com.example.midtermmovieapp.databinding.SingleMovieItemBinding
 
 class HomeNormalAdapter(val context: Context) : RecyclerView.Adapter<HomeNormalAdapter.SearchViewHolder>() {
+    var onClickListener: ((HomeModel.Result) -> Unit)? = null
+
+
 
     var list: Resource.Success<MutableList<HomeModel.Result>> = Resource.Success(mutableListOf())
     fun submitList(newList: Resource.Success<MutableList<HomeModel.Result>>) {
@@ -34,6 +37,9 @@ class HomeNormalAdapter(val context: Context) : RecyclerView.Adapter<HomeNormalA
             .load("https://image.tmdb.org/t/p/w500" +  list.data[position].posterPath)
             .error(R.drawable.ic_launcher_background)
             .into(holder.binding.ibMovieImage)
+        holder.binding.ibMovieImage.setOnClickListener{
+            onClickListener?.invoke(list.data[position])
+        }
     }
 
     override fun getItemCount(): Int {

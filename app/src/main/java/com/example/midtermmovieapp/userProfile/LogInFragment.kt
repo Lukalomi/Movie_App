@@ -1,20 +1,17 @@
 package com.example.midtermmovieapp.userProfile
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.midtermmovieapp.Models.HomeModel
-import com.example.midtermmovieapp.R
+import com.example.midtermmovieapp.utils.ResUtils
 import com.example.midtermmovieapp.databinding.FragmentLogInBinding
-import com.example.midtermmovieapp.databinding.FragmentRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -34,6 +31,7 @@ class LogInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
+        getUserInfo()
 
         binding!!.btnLogin.setOnClickListener {
             checkFields()
@@ -45,7 +43,6 @@ class LogInFragment : Fragment() {
         if (binding!!.etEmail.text.toString().isNotEmpty() && binding!!.etPass.text.toString()
                 .isNotEmpty()
         ) {
-
             viewLifecycleOwner.lifecycleScope.launch {
 
                 try {
@@ -108,6 +105,13 @@ class LogInFragment : Fragment() {
         } else {
 
             Toast.makeText(requireContext(), "you are already Logged in", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun getUserInfo() {
+        setFragmentResultListener(ResUtils.AUTH_KEY) { _, bundle ->
+            binding!!.etEmail.setText(bundle.getString(ResUtils.EMAIL,"NO VALUE"))
+            binding!!.etPass.setText(bundle.getString(ResUtils.PASSWORD, "NO VALUE"))
         }
     }
 

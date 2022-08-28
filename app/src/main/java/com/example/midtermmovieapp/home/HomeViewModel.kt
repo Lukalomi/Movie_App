@@ -1,4 +1,4 @@
-package com.example.midtermmovieapp
+package com.example.midtermmovieapp.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,12 +6,10 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.midtermmovieapp.Models.HomeModel
-import com.example.midtermmovieapp.Models.TopRatedMoviesModel
-import com.example.midtermmovieapp.Models.UpcomingMoviesModel
+import com.example.midtermmovieapp.utils.Resource
 import com.example.midtermmovieapp.dataSource.MovieDataSource
 import com.example.midtermmovieapp.dataSource.MovieTopDataSource
 import com.example.midtermmovieapp.dataSource.MovieUpcomingDataSource
-import com.example.midtermmovieapp.dataSource.SearchDataSource
 import com.example.midtermmovieapp.network.RetrofitClient
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
