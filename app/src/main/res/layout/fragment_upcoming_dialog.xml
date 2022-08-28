@@ -31,6 +31,19 @@
                 app:srcCompat="@mipmap/ic_launcher_round" />
 
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/btnBackFromDialog"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_back_svg"
+
+                app:layout_constraintBottom_toTopOf="@+id/tvDialogMovieName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.059"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ivDialogMovie"
+                app:layout_constraintVertical_bias="0.055" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDialogMovieName"
                 android:layout_width="wrap_content"

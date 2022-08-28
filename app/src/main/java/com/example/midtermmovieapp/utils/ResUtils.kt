@@ -5,8 +5,4 @@ object ResUtils {
     const val EMAIL = "email"
     const val PASSWORD = "password"
 
-
-    const val IMAGE = "image"
-    const val RATING = "rating"
-    const val TITLE = "title"
 }

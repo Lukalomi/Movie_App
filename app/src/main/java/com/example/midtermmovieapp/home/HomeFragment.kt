@@ -1,5 +1,6 @@
 package com.example.midtermmovieapp.home
 
+
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -47,7 +48,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         binding!!.appCompatImageButton.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
         }
@@ -93,6 +93,7 @@ class HomeFragment : Fragment() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 getPopularMoviesPager()
+                searchPager()
             }
 
         }
@@ -101,10 +102,10 @@ class HomeFragment : Fragment() {
 
 
     private fun searchPager() {
+        var displayList: MutableList<HomeModel.Result> = mutableListOf()
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.newState.collect {
-                    var displayList: MutableList<HomeModel.Result> = mutableListOf()
 
                     when (it) {
 
@@ -118,6 +119,7 @@ class HomeFragment : Fragment() {
                                 override fun onQueryTextChange(newText: String?): Boolean {
                                     viewModel.getSearchedMovies(query = newText.toString())
                                     if (newText!!.isNotEmpty()) {
+                                        displayList.clear()
                                         var search = newText!!.lowercase(Locale.getDefault())
                                         it.data.forEach {
                                             if (it.title.lowercase(Locale.getDefault())
@@ -126,19 +128,36 @@ class HomeFragment : Fragment() {
                                                 displayList.add(it)
                                             }
                                         }
-
+                                        val anim = LayoutAnimationController(
+                                            AnimationUtils.loadAnimation(
+                                                requireContext(),
+                                                R.anim.recycler_anim
+                                            )
+                                        )
+                                        anim.delay = 0.20f
+                                        anim.order = LayoutAnimationController.ORDER_NORMAL
                                         searchAdapter = HomeNormalAdapter(requireContext())
                                         searchAdapter.submitList(Resource.Success(displayList))
                                         binding!!.rvHomeRecycler.layoutManager =
                                             GridLayoutManager(activity, 2)
                                         binding!!.rvHomeRecycler.adapter = searchAdapter
+                                        binding!!.rvHomeRecycler.layoutAnimation = anim
+
+
+                                        searchAdapter.onClickListener = {
+                                            findNavController().navigate(
+                                                HomeFragmentDirections.actionHomeFragmentToDialogFragment(
+                                                    it
+                                                )
+                                            )
+                                        }
 
                                         if (displayList.size > 0) {
                                             binding!!.pbHome.visibility = View.GONE
 
                                         }
-                                        if (displayList.size < 0) {
-                                            binding!!.pbHome.visibility = View.GONE
+                                        if (displayList.size == 0) {
+                                            binding!!.pbHome.visibility = View.VISIBLE
 
                                         }
 
@@ -187,8 +206,8 @@ class HomeFragment : Fragment() {
                             R.anim.recycler_anim
                         )
                     )
-                    anim.delay = 0.20f
-                    anim.order = LayoutAnimationController.ORDER_NORMAL
+                    anim.delay = 0.10f
+                    anim.order = LayoutAnimationController.ORDER_RANDOM
                     binding!!.tvHomeLoader.visibility = View.GONE
                     adapter = MovieHomeAdapter(requireContext())
                     binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
