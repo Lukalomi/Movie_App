@@ -24,7 +24,7 @@
     <string name="upcoming_movies">Upcoming Movies</string>
     <string name="movie_name">Movie Name</string>
     <string name="this_is_a_description">this is a description</string>
-    <string name="movie_rating">Movie Rating :</string>
+    <string name="movie_rating">Movie Rating : </string>
     <string name="movie_list_type">Movie List Type</string>
     <string name="no_movie_found">No Movie Found</string>
     <string name="movie_app">Movie App</string>
@@ -37,5 +37,6 @@
     <string name="you_are_logged_in">you are Logged In</string>
     <string name="user_signed_out">User Signed Out</string>
     <string name="error">Error</string>
+    <string name="favorite_movies">Favorite Movies</string>
 
 </resources>

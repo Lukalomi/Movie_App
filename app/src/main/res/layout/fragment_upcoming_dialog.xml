@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:background="@drawable/gradient_dialog_background"
-    tools:context=".Dialog.UpcomingDialogFragment">
+    tools:context=".ui.Dialog.UpcomingDialogFragment">
     <androidx.cardview.widget.CardView
         android:layout_width="300dp"
         android:layout_height="550dp"
@@ -52,9 +52,9 @@
                 android:fontFamily="casual"
                 android:gravity="center"
                 android:text="@string/movie_name"
-                android:textStyle="bold"
                 android:textColor="@color/black"
                 android:textSize="22sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ivDialogMovie" />
@@ -79,10 +79,25 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:fontFamily="monospace"
-                    android:textColor="#302B2B"
                     android:justificationMode="inter_word"
-                    android:text="@string/this_is_a_description" />
+                    android:text="@string/this_is_a_description"
+                    android:textColor="#302B2B" />
             </ScrollView>
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/ivFavLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="23dp"
+                android:background="@drawable/ic_fav_logo_uncheked"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvDialogMovieName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.97"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.926" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>
