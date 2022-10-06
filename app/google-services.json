@@ -1,7 +1,8 @@
 {
   "project_info": {
     "project_number": "275945677647",
-    "project_id": "com.example.midtermmovieapp",
+    "firebase_url": "https://movieappmidterm-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "movieappmidterm",
     "storage_bucket": "movieappmidterm.appspot.com"
   },
   "client": [
@@ -20,7 +21,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDtSpvAkl_KCyeutjdbo3Pchmzoo5Whj5I"
+          "current_key": "AIzaSyAzpwrYJ_Z8WgNx1c7X7P0J83JMnDaKGho"
         }
       ],
       "services": {

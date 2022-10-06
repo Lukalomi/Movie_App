@@ -13,11 +13,11 @@ import javax.inject.Inject
 class FavoritesViewModel @Inject constructor(private val movieDao: MovieDao) : ViewModel() {
 
 
-     fun readAllData() = flow {
+    fun readAllData() = flow {
         emit(movieDao.getAll())
     }
 
-    fun insertMovie(movie:Movie) {
+    fun insertMovie(movie: Movie) {
         viewModelScope.launch {
             movieDao.addMovie(movie)
         }
@@ -26,9 +26,10 @@ class FavoritesViewModel @Inject constructor(private val movieDao: MovieDao) : V
     suspend fun deleteAllData() = movieDao.deleteAll()
 
 
-    fun deleteMovie(movie:Movie) {
+    fun deleteMovie(movie: Movie) {
         viewModelScope.launch {
             movieDao.delete(movie)
         }
     }
+
 }

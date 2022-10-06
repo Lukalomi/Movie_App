@@ -15,7 +15,7 @@
         android:foreground="?android:attr/selectableItemBackground"
         android:layout_marginBottom="50dp"
         android:entries="@array/spinner_items"
-        android:popupBackground="#4981A6"
+        android:popupBackground="#6DA4C8"
         app:layout_constraintBottom_toTopOf="@+id/rvHomeRecycler"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.01"
@@ -28,7 +28,6 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:foreground="?android:attr/selectableItemBackground"
-
         android:layout_marginStart="71dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="28dp"
@@ -126,7 +125,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_action"
         tools:itemCount="3"
-        tools:listitem="@layout/single_movie_item" />
+        tools:listitem="@layout/single_movie_item"
+        android:background="@drawable/gradient_dialog_background"/>
 
     <ProgressBar
         android:id="@+id/pbHome"

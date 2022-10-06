@@ -46,6 +46,8 @@ class UserProfileFragment : Fragment() {
     private fun userCheck() {
         if (auth.currentUser !== null) {
             binding!!.btnSignOut.visibility = View.VISIBLE
+            binding!!.btnRegister.visibility = View.GONE
+            binding!!.btnLogin.visibility = View.GONE
             binding!!.btnSignOut.setOnClickListener {
                 auth.signOut()
                 Toast.makeText(

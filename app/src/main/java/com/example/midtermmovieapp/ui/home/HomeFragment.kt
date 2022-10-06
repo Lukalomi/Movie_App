@@ -3,36 +3,45 @@ package com.example.midtermmovieapp.ui.home
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.findFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.paging.map
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
-import com.example.midtermmovieapp.domain.models.HomeModel
 import com.example.midtermmovieapp.R
 import com.example.midtermmovieapp.data.local.Movie
-import com.example.midtermmovieapp.databinding.FragmentDialogBinding
-import com.example.midtermmovieapp.ui.adapters.*
 import com.example.midtermmovieapp.databinding.FragmentHomeBinding
+import com.example.midtermmovieapp.databinding.SingleMovieItemBinding
+import com.example.midtermmovieapp.domain.models.HomeModel
+import com.example.midtermmovieapp.domain.models.TopRatedMoviesModel
+import com.example.midtermmovieapp.domain.models.UpcomingMoviesModel
+import com.example.midtermmovieapp.ui.adapters.*
 import com.example.midtermmovieapp.ui.favorites.FavoritesViewModel
+import com.example.midtermmovieapp.ui.favorites.roomList
+import com.example.midtermmovieapp.ui.favorites.roomList2
 import com.example.midtermmovieapp.utils.Resource
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -42,36 +51,48 @@ class HomeFragment : Fragment() {
     private var binding: FragmentHomeBinding? = null
     private lateinit var adapter: MovieHomeAdapter
     private val viewModel: HomeViewModel by viewModels()
+    private val viewModel2: FavoritesViewModel by viewModels()
     private lateinit var searchAdapter: HomeNormalAdapter
     private lateinit var adapterTop: MovieTopRatedAdapter
     private lateinit var adapterUpcoming: UpcomingMoviesAdapter
     lateinit var auth: FirebaseAuth
-    private val viewModelFav: FavoritesViewModel by viewModels()
-    var count = 0
-
-    var binding2:FragmentDialogBinding? = null
-
-
+    private val viewModelFav: FavoritesViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        binding2 = FragmentDialogBinding.inflate(inflater, null, false)
 
         return binding!!.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
+        lifecycleScope.launch {
+            viewModel2.readAllData().collect {
+                it.forEach {
+                    roomList.add(it)
+                }
+                Log.d("roommovie", roomList.size.toString())
 
+            }
+        }
+
+//
         binding!!.appCompatImageButton.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment())
         }
 
         goToFavFragment()
+
 
         val customList = listOf(
             getString(R.string.most_popular), getString(R.string.top_rated), getString(
@@ -95,6 +116,7 @@ class HomeFragment : Fragment() {
                     getPopularMoviesPager()
                     searchPager()
                     binding!!.tvMovieListType.text = getString(R.string.popular_movies)
+
                 }
                 if (position == 1) {
                     getTopMoviesPager()
@@ -121,6 +143,17 @@ class HomeFragment : Fragment() {
     }
 
 
+    private fun hideKeyboard(): Boolean {
+        val inputManager =
+            activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager.hideSoftInputFromWindow(
+            activity!!.currentFocus!!.windowToken,
+            InputMethodManager.HIDE_NOT_ALWAYS
+        )
+        return true
+    }
+
+
     private fun searchPager() {
         var displayList: MutableList<HomeModel.Result> = mutableListOf()
         viewLifecycleOwner.lifecycleScope.launch {
@@ -130,10 +163,14 @@ class HomeFragment : Fragment() {
                     when (it) {
 
                         is Resource.Success -> {
+
                             binding!!.searchAction.setOnQueryTextListener(object :
                                 SearchView.OnQueryTextListener {
                                 override fun onQueryTextSubmit(query: String?): Boolean {
+                                    hideKeyboard()
+
                                     return true
+
                                 }
 
                                 override fun onQueryTextChange(newText: String?): Boolean {
@@ -153,14 +190,15 @@ class HomeFragment : Fragment() {
 
                                     } else {
                                         getPopularMoviesPager()
+                                        hideKeyboard()
+                                        binding!!.searchAction.clearFocus()
+
                                     }
 
-
                                     return true
-
                                 }
-
-                            })
+                            }
+                            )
                         }
 
                         is Resource.Error -> {
@@ -190,13 +228,12 @@ class HomeFragment : Fragment() {
                 viewModel.moviePager.collect {
                     setPopularsAdapter()
                     adapter.submitData(it)
-
                 }
+
             }
         }
 
     }
-
 
 
     private fun getTopMoviesPager() {
@@ -246,15 +283,582 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun setPopularsAdapter() {
-        val dialogBinding = layoutInflater.inflate(R.layout.fragment_dialog,null)
+    private fun setSearchDialog(item: HomeModel.Result) {
+        val dialogBinding = layoutInflater.inflate(R.layout.fragment_dialog, null)
         val dialog = Dialog(requireContext())
         dialog.setContentView(dialogBinding)
         dialog.setCancelable(true)
         val name = dialogBinding.findViewById<TextView>(R.id.tvDialogMovieName)
-        var image:ImageView = dialogBinding.findViewById(R.id.ivDialogMovie)
+        var image: ImageView = dialogBinding.findViewById(R.id.ivDialogMovie)
         val desc = dialogBinding.findViewById<TextView>(R.id.tvDialogMovieDesc)
         val addAndRemove = dialogBinding.findViewById<AppCompatImageButton>(R.id.ivFavLogo)
+        var movie = Movie(
+            originalTitle = item.originalTitle,
+            posterPath = "https://image.tmdb.org/t/p/w500" + item.posterPath,
+            overview = item.overview,
+            voteAverage = item.voteAverage,
+            uid = 0,
+            favoritesLogo = resources.getDrawable(R.mipmap.ic_launcher_round).toBitmap()
+        )
+        name.text = item.title
+        desc.text = item.overview
+        Glide.with(requireContext())
+            .load("https://image.tmdb.org/t/p/w500" + item.posterPath)
+            .into(image)
+        val builder = AlertDialog.Builder(requireContext())
+
+
+        if (roomList.size == 0) {
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+        if (roomList.size == 1 && roomList[0].originalTitle != movie.originalTitle) {
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+        if (roomList.size == 2 &&(roomList[0].originalTitle != movie.originalTitle || roomList[1].originalTitle != movie.originalTitle ) ) {
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+        if (roomList.size == 2 &&(roomList[0].originalTitle == movie.originalTitle || roomList[1].originalTitle == movie.originalTitle ) ) {
+            addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Movie Is Already In Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+        if (roomList.size == 1 && (roomList[0].originalTitle == movie.originalTitle)) {
+            addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Movie Is Already In Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+        if(roomList.size > 2) {
+            roomList2.clear()
+            builder.setPositiveButton("Yes") { _, _ ->
+                roomList.add(movie)
+
+                if(roomList2.toString().contains(movie.originalTitle) || roomList.toString().contains(movie.originalTitle) ) {
+                    Toast.makeText(requireContext(),"Its already a fav",Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+
+                }
+                if(!roomList2.toString().contains(movie.originalTitle) || !roomList.toString().contains(movie.originalTitle)) {
+
+                    viewModel2.insertMovie(movie)
+
+                    Toast.makeText(
+                        requireContext(),
+                        "${movie.originalTitle} Has Been Added To Favorites",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    dialog.dismiss()
+
+                }
+            }
+        }
+
+        if(roomList.size > 2 && roomList.toString().contains(movie.originalTitle)) {
+            addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+        }
+
+
+
+
+
+
+        builder.setNegativeButton("No") { _, _ -> }
+        builder.setTitle("Add ${movie.originalTitle}?")
+        builder.setMessage("Are You Sure You Want To Add ${movie.originalTitle} To Favorite Movies?")
+        addAndRemove.setOnClickListener {
+
+            builder.create().show()
+
+        }
+
+        dialog.show()
+
+    }
+
+
+    private fun setPopularsDialog(item: HomeModel.Result) {
+        val dialogBinding = layoutInflater.inflate(R.layout.fragment_dialog, null)
+        val dialog = Dialog(requireContext())
+        dialog.setContentView(dialogBinding)
+        dialog.setCancelable(true)
+        val name = dialogBinding.findViewById<TextView>(R.id.tvDialogMovieName)
+        var image: ImageView = dialogBinding.findViewById(R.id.ivDialogMovie)
+        val desc = dialogBinding.findViewById<TextView>(R.id.tvDialogMovieDesc)
+        val addAndRemove = dialogBinding.findViewById<AppCompatImageButton>(R.id.ivFavLogo)
+        var movie = Movie(
+            originalTitle = item.originalTitle,
+            posterPath = "https://image.tmdb.org/t/p/w500" + item.posterPath,
+            overview = item.overview,
+            voteAverage = item.voteAverage,
+            uid = 0,
+            favoritesLogo = resources.getDrawable(R.mipmap.ic_launcher_round).toBitmap()
+        )
+        name.text = item.title
+        desc.text = item.overview
+        Glide.with(requireContext())
+            .load("https://image.tmdb.org/t/p/w500" + item.posterPath)
+            .into(image)
+        val builder = AlertDialog.Builder(requireContext())
+
+
+        if (roomList.size == 0) {
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+        if (roomList.size == 1 && roomList[0].originalTitle != movie.originalTitle) {
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+        if (roomList.size == 2 &&(roomList[0].originalTitle != movie.originalTitle || roomList[1].originalTitle != movie.originalTitle ) ) {
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+        if (roomList.size == 2 &&(roomList[0].originalTitle == movie.originalTitle || roomList[1].originalTitle == movie.originalTitle ) ) {
+            addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Movie Is Already In Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+       if (roomList.size == 1 && (roomList[0].originalTitle == movie.originalTitle)) {
+           addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Movie Is Already In Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+        if(roomList.size > 2) {
+            roomList2.clear()
+                builder.setPositiveButton("Yes") { _, _ ->
+                    roomList.add(movie)
+
+                    if(roomList2.toString().contains(movie.originalTitle) || roomList.toString().contains(movie.originalTitle) ) {
+                        Toast.makeText(requireContext(),"Its already a fav",Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+
+                    }
+                    if(!roomList2.toString().contains(movie.originalTitle) || !roomList.toString().contains(movie.originalTitle)) {
+
+                        viewModel2.insertMovie(movie)
+
+                        Toast.makeText(
+                            requireContext(),
+                            "${movie.originalTitle} Has Been Added To Favorites",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        dialog.dismiss()
+
+                    }
+                }
+            }
+
+        if(roomList.size > 2 && roomList.toString().contains(movie.originalTitle)) {
+            addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+        }
+
+
+
+
+
+
+        builder.setNegativeButton("No") { _, _ -> }
+        builder.setTitle("Add ${movie.originalTitle}?")
+        builder.setMessage("Are You Sure You Want To Add ${movie.originalTitle} To Favorite Movies?")
+        addAndRemove.setOnClickListener {
+
+            builder.create().show()
+
+        }
+
+        dialog.show()
+
+    }
+
+
+    private fun setTopRatedDialog(item: TopRatedMoviesModel.Result) {
+        val dialogBinding = layoutInflater.inflate(R.layout.fragment_dialog, null)
+        val dialog = Dialog(requireContext())
+        dialog.setContentView(dialogBinding)
+        dialog.setCancelable(true)
+        val name = dialogBinding.findViewById<TextView>(R.id.tvDialogMovieName)
+        var image: ImageView = dialogBinding.findViewById(R.id.ivDialogMovie)
+        val desc = dialogBinding.findViewById<TextView>(R.id.tvDialogMovieDesc)
+        val addAndRemove = dialogBinding.findViewById<AppCompatImageButton>(R.id.ivFavLogo)
+        var movie = Movie(
+            originalTitle = item.originalTitle!!,
+            posterPath = "https://image.tmdb.org/t/p/w500" + item.posterPath,
+            overview = item.overview!!,
+            voteAverage = item.voteAverage!!,
+            uid = 0,
+            favoritesLogo = resources.getDrawable(R.mipmap.ic_launcher_round).toBitmap()
+        )
+        name.text = item.title
+        desc.text = item.overview
+        Glide.with(requireContext())
+            .load("https://image.tmdb.org/t/p/w500" + item.posterPath)
+            .into(image)
+        val builder = AlertDialog.Builder(requireContext())
+
+        if (roomList.size == 0) {
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+        if (roomList.size == 1 && roomList[0].originalTitle != movie.originalTitle) {
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+        if (roomList.size == 2 &&(roomList[0].originalTitle != movie.originalTitle || roomList[1].originalTitle != movie.originalTitle ) ) {
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+        if (roomList.size == 2 &&(roomList[0].originalTitle == movie.originalTitle || roomList[1].originalTitle == movie.originalTitle ) ) {
+            addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Movie Is Already In Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+        if (roomList.size == 1 && (roomList[0].originalTitle == movie.originalTitle)) {
+            addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Movie Is Already In Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+        if(roomList.size > 2) {
+            roomList2.clear()
+            builder.setPositiveButton("Yes") { _, _ ->
+                roomList.add(movie)
+
+                if(roomList2.toString().contains(movie.originalTitle) || roomList.toString().contains(movie.originalTitle) ) {
+                    Toast.makeText(requireContext(),"Its already a fav",Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+
+                }
+                if(!roomList2.toString().contains(movie.originalTitle) || !roomList.toString().contains(movie.originalTitle)) {
+
+                    viewModel2.insertMovie(movie)
+
+                    Toast.makeText(
+                        requireContext(),
+                        "${movie.originalTitle} Has Been Added To Favorites",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    dialog.dismiss()
+
+                }
+            }
+        }
+
+        if(roomList.size > 2 && roomList.toString().contains(movie.originalTitle)) {
+            addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+        }
+
+
+
+
+
+
+        builder.setNegativeButton("No") { _, _ -> }
+        builder.setTitle("Add ${movie.originalTitle}?")
+        builder.setMessage("Are You Sure You Want To Add ${movie.originalTitle} To Favorite Movies?")
+        addAndRemove.setOnClickListener {
+
+            builder.create().show()
+
+        }
+
+        dialog.show()
+
+    }
+
+    private fun setUpcomingDialog(item: UpcomingMoviesModel.Result) {
+        val dialogBinding = layoutInflater.inflate(R.layout.fragment_dialog, null)
+        val dialog = Dialog(requireContext())
+        dialog.setContentView(dialogBinding)
+        dialog.setCancelable(true)
+        val name = dialogBinding.findViewById<TextView>(R.id.tvDialogMovieName)
+        var image: ImageView = dialogBinding.findViewById(R.id.ivDialogMovie)
+        val desc = dialogBinding.findViewById<TextView>(R.id.tvDialogMovieDesc)
+        val addAndRemove = dialogBinding.findViewById<AppCompatImageButton>(R.id.ivFavLogo)
+        var movie = Movie(
+            originalTitle = item.originalTitle!!,
+            posterPath = "https://image.tmdb.org/t/p/w500" + item.posterPath,
+            overview = item.overview!!,
+            voteAverage = item.voteAverage!!,
+            uid = 0,
+            favoritesLogo = resources.getDrawable(R.mipmap.ic_launcher_round).toBitmap()
+        )
+        name.text = item.title
+        desc.text = item.overview
+        Glide.with(requireContext())
+            .load("https://image.tmdb.org/t/p/w500" + item.posterPath)
+            .into(image)
+        val builder = AlertDialog.Builder(requireContext())
+
+
+        if (roomList.size == 0) {
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+        if (roomList.size == 1 && roomList[0].originalTitle != movie.originalTitle) {
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+        if (roomList.size == 2 &&(roomList[0].originalTitle != movie.originalTitle || roomList[1].originalTitle != movie.originalTitle ) ) {
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                viewModel2.insertMovie(movie)
+                roomList.add(movie)
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Has Been Added To Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+        if (roomList.size == 2 &&(roomList[0].originalTitle == movie.originalTitle || roomList[1].originalTitle == movie.originalTitle ) ) {
+            addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Movie Is Already In Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+
+        if (roomList.size == 1 && (roomList[0].originalTitle == movie.originalTitle)) {
+            addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+            builder.setPositiveButton("Yes") { _, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    "${movie.originalTitle} Movie Is Already In Favorites",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+
+            }
+        }
+        if(roomList.size > 2) {
+            roomList2.clear()
+            builder.setPositiveButton("Yes") { _, _ ->
+                roomList.add(movie)
+
+                if(roomList2.toString().contains(movie.originalTitle) || roomList.toString().contains(movie.originalTitle) ) {
+                    Toast.makeText(requireContext(),"Its already a fav",Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+
+                }
+                if(!roomList2.toString().contains(movie.originalTitle) || !roomList.toString().contains(movie.originalTitle)) {
+
+                    viewModel2.insertMovie(movie)
+
+                    Toast.makeText(
+                        requireContext(),
+                        "${movie.originalTitle} Has Been Added To Favorites",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    dialog.dismiss()
+
+                }
+            }
+        }
+
+        if(roomList.size > 2 && roomList.toString().contains(movie.originalTitle)) {
+            addAndRemove.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(),R.drawable.ic_fav_logo))
+
+        }
+
+
+
+
+
+
+
+        builder.setNegativeButton("No") { _, _ -> }
+        builder.setTitle("Add ${movie.originalTitle}?")
+        builder.setMessage("Are You Sure You Want To Add ${movie.originalTitle} To Favorite Movies?")
+        addAndRemove.setOnClickListener {
+
+            builder.create().show()
+
+        }
+
+        dialog.show()
+
+    }
+
+    private fun setPopularsAdapter() {
+
 
         adapter = MovieHomeAdapter(requireContext())
         binding!!.rvHomeRecycler.layoutManager = GridLayoutManager(activity, 2)
@@ -262,74 +866,19 @@ class HomeFragment : Fragment() {
         adapter.withLoadStateFooter(footer = LoaderAdapter())
         binding!!.pbHome.visibility = View.GONE
         binding!!.tvHomeLoader.visibility = View.GONE
-
         adapter.onClickListener = { item ->
-            findNavController().navigate(
-                HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-                    item
+            setPopularsDialog(item)
+            lifecycleScope.launch {
+                viewModel2.readAllData().collect {
+                    it.forEach {
+                        roomList2.add(it)
+                    }
+                    Log.d("roommovie2", roomList.size.toString())
 
-                )
-            )
-//            var movie = Movie(
-//                originalTitle = item.originalTitle!!,
-//                posterPath = "https://image.tmdb.org/t/p/w500" + item.posterPath,
-//                overview = item.overview!!,
-//                voteAverage = item.voteAverage!!,
-//                uid = 0,
-//                favoritesLogo = resources.getDrawable(R.mipmap.ic_launcher_round).toBitmap()
-//            )
-//            name.text = item.title
-//            desc.text = item.overview
-//            Glide.with(requireContext())
-//                .load("https://image.tmdb.org/t/p/w500" + item.posterPath)
-//                .into(image)
-//
-//            addAndRemove.setOnClickListener {
-//                viewLifecycleOwner.lifecycleScope.launch {
-//
-//                    if(count == 0) {
-//
-//                        val builder = AlertDialog.Builder(requireContext())
-//                        builder.setPositiveButton("Yes") { _, _ ->
-//                            viewModelFav.insertMovie(movie)
-//                            addAndRemove.background = resources.getDrawable(R.drawable.ic_fav_logo)
-//                            Toast.makeText(
-//                                requireContext(),
-//                                "Movie ${movie.originalTitle} Has Been Added To Favorites",
-//                                Toast.LENGTH_SHORT
-//                            ).show()
-//                            count++
-//                        }
-//                        builder.setNegativeButton("No") { _, _ -> }
-//                        builder.setTitle("Add ${movie.originalTitle}?")
-//                        builder.setMessage("Are You Sure You Want To Add ${movie.originalTitle} To Favorite Movies?")
-//                        builder.create().show()
-//
-//                    }
-//                    else{
-//                        addAndRemove.background =
-//                            resources.getDrawable(R.drawable.ic_fav_logo_uncheked)
-//                        Toast.makeText(
-//                            requireContext(),
-//                            "Movie ${movie.originalTitle} Has Been Removed From Favorites",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                        viewModelFav.readAllData().collect{
-//                            viewModelFav.deleteMovie(it[movie.uid])
-//                        }
-//
-//                        count--
-//                        Log.d("countremove",count.toString())
-//
-//                    }
-//                }
-//            }
-//
-//
-//            dialog.show()
-
-
+                }
+            }
         }
+
     }
 
     private fun setSearchAdapter() {
@@ -340,12 +889,17 @@ class HomeFragment : Fragment() {
         binding!!.rvHomeRecycler.adapter = searchAdapter
 
 
-        searchAdapter.onClickListener = {
-            findNavController().navigate(
-                HomeFragmentDirections.actionHomeFragmentToDialogFragment(
-                    it
-                )
-            )
+        searchAdapter.onClickListener = { item ->
+            setSearchDialog(item)
+            lifecycleScope.launch {
+                viewModel2.readAllData().collect {
+                    it.forEach {
+                        roomList2.add(it)
+                    }
+                    Log.d("roommovie2", roomList.size.toString())
+
+                }
+            }
         }
     }
 
@@ -358,12 +912,17 @@ class HomeFragment : Fragment() {
         binding!!.rvHomeRecycler.adapter = adapterTop
 
         adapterTop.withLoadStateFooter(footer = LoaderAdapter())
-        adapterTop.onClickListener = {
-            findNavController().navigate(
-                HomeFragmentDirections.actionHomeFragmentToTopRatedDialogFragment(
-                    it
-                )
-            )
+        adapterTop.onClickListener = { item ->
+            setTopRatedDialog(item!!)
+            lifecycleScope.launch {
+                viewModel2.readAllData().collect {
+                    it.forEach {
+                        roomList2.add(it)
+                    }
+                    Log.d("roommovie2", roomList.size.toString())
+
+                }
+            }
         }
     }
 
@@ -376,19 +935,25 @@ class HomeFragment : Fragment() {
         binding!!.rvHomeRecycler.adapter = adapterUpcoming
         adapterUpcoming.withLoadStateFooter(footer = LoaderAdapter())
         adapterUpcoming.onClickListener = { item ->
-            findNavController().navigate(
-                HomeFragmentDirections.actionHomeFragmentToUpcomingDialogFragment(
-                    item
-                )
+            setUpcomingDialog(item!!)
+            lifecycleScope.launch {
+                viewModel2.readAllData().collect {
+                    it.forEach {
+                        roomList2.add(it)
+                    }
+                    Log.d("roommovie2", roomList.size.toString())
 
-            )
+                }
+            }
         }
     }
 
+
+
     override fun onDestroyView() {
         super.onDestroyView()
+        roomList.clear()
         binding = null
-        binding2 = null
 
     }
 
