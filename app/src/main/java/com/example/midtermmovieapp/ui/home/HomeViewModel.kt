@@ -5,32 +5,36 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import com.example.midtermmovieapp.data.remote.FetchedMovies
 import com.example.midtermmovieapp.domain.models.HomeModel
 import com.example.midtermmovieapp.utils.Resource
 import com.example.midtermmovieapp.ui.dataSource.MovieDataSource
 import com.example.midtermmovieapp.ui.dataSource.MovieTopDataSource
 import com.example.midtermmovieapp.ui.dataSource.MovieUpcomingDataSource
-import com.example.midtermmovieapp.data.RetrofitClient
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+
+@HiltViewModel
+class HomeViewModel @Inject constructor(private val fetchedMovies: FetchedMovies) : ViewModel() {
 
 
     val moviePager =
-        Pager(config = PagingConfig(30), pagingSourceFactory = { MovieDataSource() }).flow.cachedIn(
+        Pager(config = PagingConfig(30), pagingSourceFactory = { MovieDataSource(fetchedMovies) }).flow.cachedIn(
             viewModelScope
         )
 
 
     val movieTopPager = Pager(
         config = PagingConfig(30),
-        pagingSourceFactory = { MovieTopDataSource() }).flow.cachedIn(viewModelScope)
+        pagingSourceFactory = { MovieTopDataSource(fetchedMovies) }).flow.cachedIn(viewModelScope)
 
 
     val movieUpcomingPager = Pager(
         config = PagingConfig(30),
-        pagingSourceFactory = { MovieUpcomingDataSource() }).flow.cachedIn(viewModelScope)
+        pagingSourceFactory = { MovieUpcomingDataSource(fetchedMovies) }).flow.cachedIn(viewModelScope)
 
 
 
@@ -40,7 +44,8 @@ class HomeViewModel : ViewModel() {
 
     fun getSearchedMovies(query: String) {
         viewModelScope.launch {
-            val response = RetrofitClient.FetchedMovies().searchMovies(query)
+
+            val response = fetchedMovies.searchMovies(query)
             if (response.isSuccessful) {
                 _newState.value = Resource.Success(response.body()?.results ?: mutableListOf())
             } else {

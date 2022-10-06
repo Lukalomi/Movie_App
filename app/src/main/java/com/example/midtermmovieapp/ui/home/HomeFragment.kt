@@ -56,7 +56,6 @@ class HomeFragment : Fragment() {
     private lateinit var adapterTop: MovieTopRatedAdapter
     private lateinit var adapterUpcoming: UpcomingMoviesAdapter
     lateinit var auth: FirebaseAuth
-    private val viewModelFav: FavoritesViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,11 +64,6 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         return binding!!.root
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
     }
 
 

@@ -3,9 +3,11 @@ package com.example.midtermmovieapp.ui.dataSource
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.midtermmovieapp.domain.models.UpcomingMoviesModel
-import com.example.midtermmovieapp.data.RetrofitClient
+import com.example.midtermmovieapp.data.remote.FetchedMovies
+import javax.inject.Inject
 
-class MovieUpcomingDataSource : PagingSource<Int, UpcomingMoviesModel.Result>() {
+class MovieUpcomingDataSource @Inject constructor(private val fetchedMovies: FetchedMovies) :
+    PagingSource<Int, UpcomingMoviesModel.Result>() {
     override fun getRefreshKey(state: PagingState<Int, UpcomingMoviesModel.Result>): Int? {
         return null
     }
@@ -15,7 +17,7 @@ class MovieUpcomingDataSource : PagingSource<Int, UpcomingMoviesModel.Result>() 
         val prevPage = if (page != 1) page - 1 else null
         val nextPage = page + 1
         return try {
-            val response = RetrofitClient.FetchedMovies().getUpcomingMoviesModel(page)
+            val response = fetchedMovies.getUpcomingMoviesModel(page)
             if (response.isSuccessful) {
                 val movies = response.body()?.results ?: mutableListOf()
                 return LoadResult.Page(movies, prevPage, nextPage)
